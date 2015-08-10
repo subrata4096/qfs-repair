@@ -1,0 +1,13 @@
+chunkServer.metaServer.hostname = 192.168.0.235
+chunkServer.metaServer.port = 20100
+chunkServer.clientPort = 21001
+chunkServer.clusterKey = myTestCluster
+chunkServer.rackId = 0
+chunkServer.chunkDir = /home/ubuntu/qfsbase/chunkdir11
+chunkServer.diskIo.crashOnError = 1
+chunkServer.abortOnChecksumMismatchFlag = 1
+chunkServer.msgLogWriter.logLevel = DEBUG
+chunkServer.msgLogWriter.maxLogFileSize = 1e6
+chunkServer.msgLogWriter.maxLogFiles = 2
+chunkServer.pidFile = /home/ubuntu/qfsbase/chunkserver.pid
+chunkServer.clientThreadCount = 0

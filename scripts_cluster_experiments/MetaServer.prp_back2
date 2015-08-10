@@ -1,0 +1,16 @@
+metaServer.clientPort = 20000
+metaServer.chunkServerPort = 20100
+metaServer.clusterKey = myTestCluster
+metaServer.cpDir = /home/ubuntu/qfsbase/meta/checkpoints
+metaServer.logDir = /home/ubuntu/qfsbase/meta/logs
+metaServer.recoveryInterval = 1
+metaServer.serverDownReplicationDelay = 15
+metaServer.msgLogWriter.logLevel = DEBUG
+metaServer.msgLogWriter.maxLogFileSize = 1e6
+metaServer.msgLogWriter.maxLogFiles = 10
+metaServer.minChunkservers = 1
+metaServer.clientThreadCount = 4
+metaServer.rootDirUser = 1001
+metaServer.rootDirGroup = 1001
+metaServer.rootDirMode = 0777
+metaServer.pidFile = /home/ubuntu/qfsbase/meta/metaserver.pid
