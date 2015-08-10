@@ -8792,6 +8792,12 @@ ChunkServerPtr LayoutManager::CoordinateTheReplicationProcess(CSMap::Entry& c, c
            } 
 
            ss << "chunkID=" << vecStart->second << " rs_chunk_index=" << vecStart->first;
+       
+           if (!IsChunkStable(vecStart->second))
+           {
+              KFS_LOG_STREAM_DEBUG << "subrata : chunkID=" << vecStart->second << " not stable. skipping.. " << KFS_LOG_EOM;
+              continue;
+           }
 
            listOfRelatedChunkIds.push_back(vecStart->second);  //keep track of the remaining chunkIds for this stripe..
 
@@ -8864,6 +8870,11 @@ ChunkServerPtr LayoutManager::CoordinateTheReplicationProcess(CSMap::Entry& c, c
       {
             if(theMissing_chunkId == vecStart->second)
              {
+               continue;
+             }
+             if (!IsChunkStable(vecStart->second))
+             {
+               KFS_LOG_STREAM_DEBUG << "subrata : chunkID=" << vecStart->second << " not stable. skipping.. " << KFS_LOG_EOM;
                continue;
              }
              
