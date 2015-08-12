@@ -65,7 +65,7 @@ KFS::KfsClient *gKfsClient;
 
 //subrata start
 
-long stripeSize = 32u <<  20;
+long stripeSize = 32u <<  20; //we will keep it same as chunksize in Kfstypes.h
 //long stripeSize = 16u <<  20;
 //int numBytes = 2048;
 //int numBytes = 64 << 20;
