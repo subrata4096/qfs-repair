@@ -74,7 +74,9 @@ numFiles=$2  # number of files to use for creating chunks
 numChunksToLose=$3  # number of chunks to kill. We will check all the chunk servers and will kill the one that has this much number of chunks in it
 buildDir=$4
 if [ -z "$4" ]; then
+        
         echo "Please provide a build dir. Example: build64MB, build32MB, or build. etc."
+        echo "help : ./run_experiment.sh repair 15 12 build32MB " 
         exit
 fi
 

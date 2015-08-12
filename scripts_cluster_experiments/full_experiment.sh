@@ -3,7 +3,7 @@
 
 chunkSizeList="32MB 64MB 16MB 8MB"
 #chunkSizeList="8MB"
-numExpId="1 2 3 4 5"
+numExpId="1 2 3 4"
 #numExpId="1"
 failureCount="1 2 4 8 10 12"
 #failureCount="1"

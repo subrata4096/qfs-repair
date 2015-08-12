@@ -28,9 +28,11 @@ $chunkKillScriptNameOrig &
 for s in $chunkservers
 do
 	echo "Processing $s"
-#        scp $chunkKillScriptName ubuntu@$s:/home/ubuntu/
+        scp $chunkKillScriptName ubuntu@$s:/home/ubuntu/
+        scp $chunkKillScriptNameOrig ubuntu@$s:/home/ubuntu/
+
         doCompile $s $chunkKillScriptName &
-        #doCompile $s $chunkKillScriptNameOrig &
+        doCompile $s $chunkKillScriptNameOrig &
 done
 wait
 echo "Done all compiling"

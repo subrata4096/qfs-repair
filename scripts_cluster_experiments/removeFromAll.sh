@@ -17,6 +17,7 @@ chunkservers="192.168.0.246 192.168.0.250 192.168.0.251 192.168.0.252 192.168.0.
 
 theFileToRemoveStr=$1
 echo "Removing $theFileToRemoveStr on ALL the servers..." 
+rm -rf "$theFileToRemoveStr"
 
 for s in $chunkservers
 do

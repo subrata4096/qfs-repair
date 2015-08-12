@@ -1,6 +1,7 @@
 #!/bin/bash
 
 targetChunkSize=$1
+
 targetDir="build$targetChunkSize"
 
 cd /home/ubuntu/codes/qfs-repair/

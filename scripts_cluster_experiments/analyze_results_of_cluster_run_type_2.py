@@ -80,11 +80,12 @@ if __name__ == "__main__" :
 
 	for chunkSize in chunkSizeList:
 		print " - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - "
-		for fCount in failureCount:
+		for mode in modeList:
                         print " --------------------------------------------"
-			for mode in modeList:
-				maxTimeList = []
-                                avgTimeList = []
+			maxTimeList = []
+			numOfFailuresRecoveredSuccesfully = []
+			for fCount in failureCount:
+                                #avgTimeList = []
    				for eId in numExpId:
 
 					dirName = "/home/ubuntu/experimentLogBaseDir/" + chunkSize + "/failures_" + str(fCount) + "/" + mode + "/exp_" +  eId
@@ -110,27 +111,30 @@ if __name__ == "__main__" :
 
                                         mxTime, avgTime = retval
 
-                                        maxTimeList.append(mxTime)      
-                                        avgTimeList.append(avgTime)      
+                                        maxTimeList.append(mxTime)
+					numOfFailuresRecoveredSuccesfully.append(numberOfMatches)      
+                                        #avgTimeList.append(avgTime)      
 
                                          
 				#end for
-                                if((len(maxTimeList) == 0) or (len(avgTimeList) == 0)):
-					continue
-                                npmaxTimeArr = np.array(maxTimeList)
-				npavgTimeArr = np.array(avgTimeList)
+                                #if((len(maxTimeList) == 0) or (len(avgTimeList) == 0)):
+				#	continue
+                                #npmaxTimeArr = np.array(maxTimeList)
+				#npavgTimeArr = np.array(avgTimeList)
 
-                                avgOfMax = np.mean(npmaxTimeArr)
-                                avgOfAvg = np.mean(npavgTimeArr)
+                                #avgOfMax = np.mean(npmaxTimeArr)
+                                #avgOfAvg = np.mean(npavgTimeArr)
 
-                                avgOfMaxInMSec = int(float(avgOfMax/1000.00) + 0.5)
-                                avgOfAvgInMSec = int(float(avgOfAvg/1000.00) + 0.5)
+                                #avgOfMaxInMSec = int(float(avgOfMax/1000.00) + 0.5)
+                                #avgOfAvgInMSec = int(float(avgOfAvg/1000.00) + 0.5)
 
                                 #print "For mode:",mode," CHUNKSIZE = ",chunkSize," num failure = ",fCount," avg Maximum REPAIR time = ", avgOfMaxInMSec, " ms and avg Average REPAIR time = ", avgOfAvgInMSec, " ms"
-                                print "For mode:",mode," CHUNKSIZE = ",chunkSize," num failure = ",numberOfMatches," avg Maximum REPAIR time = ", avgOfMaxInMSec, " ms and avg Average REPAIR time = ", avgOfAvgInMSec, " ms"
+                                #print "For mode:",mode," CHUNKSIZE = ",chunkSize," num failure = ",numberOfMatches," avg Maximum REPAIR time = ", avgOfMaxInMSec, " ms and avg Average REPAIR time = ", avgOfAvgInMSec, " ms"
                         
 			#end for
-			print " --------------------------------------------"
+			print chunkSize, mode, " --------------------------------------------"
+			print numOfFailuresRecoveredSuccesfully
+			print maxTimeList
 		#end for
 		print " - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - "
                                         
