@@ -171,6 +171,17 @@ private:
     CSMapServerInfo& operator=(const CSMapServerInfo&);
 };
 
+//subrata add
+struct ChunkServerReplicationLoad
+{
+       //this will keep track of how much pressure is there on a chunkserver. This will be used to distribute the load in the "outer-loop".  By creating a ranked list.
+
+       int numOfActingSources;
+       int numOfFinalRepairs;
+       //int availableBandWidth;
+};
+//subrata end
+
 class ChunkServer :
     public KfsCallbackObj,
     public boost::enable_shared_from_this<ChunkServer>,
@@ -178,6 +189,10 @@ class ChunkServer :
     private SslFilterVerifyPeer {
 public:
     typedef int RackId;
+    
+    //subrata add
+    ChunkServerReplicationLoad sereverReplicationLoad; 
+    //subrata end
     class ChunkIdSet
     {
     public:
