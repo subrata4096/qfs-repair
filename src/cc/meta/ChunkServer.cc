@@ -2096,7 +2096,9 @@ ChunkServer::ReplicateChunk(fid_t fid, chunkId_t chunkId,
     NewChunkInTier(minSTier);
     Enqueue(r, sReplicationTimeout);
     return 0;
-#endif //subrata end
+#endif 
+return 0;
+//subrata end
 }
 
 void
@@ -2711,5 +2713,36 @@ ChunkServer::Verify(
     }
     return true;
 }
+//subrata add
+int ChunkServer::getRepairChoiceWeight(bool hasCache)
+{
+    int weight = sereverRepairLoad.numOfActingSources + sereverRepairLoad.numOfFinalRepairs;
+    if(hasCache)
+    {
+       weight += 100;  //weight increase for having a hot cache..
+    }
+    return weight;
+}
+bool SortFunction(const ChunkServerPtr server1, const ChunkServerPtr server2, const std::map<std::string, bool>& serversWithHotCache)
+{
+   bool server1_has_cache = false;
+   bool server2_has_cache = false;
+   if(serversWithHotCache.find(server1->GetHostPortStr()) != serversWithHotCache.end())
+   {
+        //server1 has hot cache for this missing chunk/stripe .. 
+        server1_has_cache = true;
+   }
+   if(serversWithHotCache.find(server2->GetHostPortStr()) != serversWithHotCache.end())
+   {
+        //server2 has hot cache for this missing chunk/stripe .. 
+        server2_has_cache = true;
+   }
+   int weight1 = server1->getRepairChoiceWeight(server1_has_cache);
+   int weight2 = server2->getRepairChoiceWeight(server2_has_cache);
+
+   return weight1 < weight2;
+
+}
+//subrata end
 
 } // namespace KFS

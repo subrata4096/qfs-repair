@@ -172,13 +172,17 @@ private:
 };
 
 //subrata add
-struct ChunkServerReplicationLoad
+struct ChunkServerRepairLoad
 {
        //this will keep track of how much pressure is there on a chunkserver. This will be used to distribute the load in the "outer-loop".  By creating a ranked list.
 
        int numOfActingSources;
        int numOfFinalRepairs;
        //int availableBandWidth;
+       ChunkServerRepairLoad() : 
+          numOfActingSources(0), 
+          numOfFinalRepairs(0)
+          {}
 };
 //subrata end
 
@@ -191,7 +195,8 @@ public:
     typedef int RackId;
     
     //subrata add
-    ChunkServerReplicationLoad sereverReplicationLoad; 
+    ChunkServerRepairLoad sereverRepairLoad;
+    int getRepairChoiceWeight(bool hasCache); 
     //subrata end
     class ChunkIdSet
     {
@@ -1156,6 +1161,28 @@ protected:
         const char* statusMsg);
     void ReleasePendingResponses(bool sendResponseFlag = false);
 };
+
+//subrata add
+bool SortFunction(const ChunkServerPtr server1, const ChunkServerPtr server2, const std::map<std::string, bool>& serversWithHotCache);
+class ChunkServerSorter {
+      std::map<std::string, bool> serversWithHotCache_;
+public:
+      ChunkServerSorter(std::map<std::string, bool>& serversWithCache)
+      {
+             std::map<std::string, bool> :: iterator servStart = serversWithCache.begin();
+             std::map<std::string, bool> :: iterator servEnd = serversWithCache.end();
+             for(; servStart != servEnd; servStart++)
+             {
+                  serversWithHotCache_[servStart->first] = servStart->second;
+             }
+       
+      }
+      bool operator()(const ChunkServerPtr server1, const ChunkServerPtr server2) const {
+            return SortFunction(server1, server2, serversWithHotCache_);
+      }
+};
+
+//subrata end
 
 } // namespace KFS
 
