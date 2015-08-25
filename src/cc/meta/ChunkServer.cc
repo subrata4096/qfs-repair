@@ -214,6 +214,14 @@ int64_t ChunkServer::sMaxHelloBufferBytes = 256 << 20;
 int ChunkServer::sEvacuateRateUpdateInterval = 120;
 size_t ChunkServer::sChunkDirsCount = 0;
 
+
+//subrata add
+//weights for calculating a overall server weight for choosing servers during parallel repair
+int ChunkServer::repairLoadWeight_cache = 3;
+int ChunkServer::repairLoadWeight_numSrc = 2;
+int ChunkServer::repairLoadWeight_numDst = 1;
+//subrata end
+
 const int kMaxReadAhead             = 4 << 10;
 // Bigger than the default MAX_RPC_HEADER_LEN: max heartbeat size.
 const int kMaxRequestResponseHeader = 64 << 10;
@@ -259,6 +267,22 @@ void ChunkServer::SetParameters(const Properties& prop, int clientPort)
     sRestartCSOnInvalidClusterKeyFlag = prop.getValue(
         "metaServer.chunkServer.restartOnInvalidClusterKey",
         sRestartCSOnInvalidClusterKeyFlag ? 1 : 0) != 0;
+//subrata add
+//weights for calculating a overall server weight for choosing servers during parallel repair
+
+    repairLoadWeight_cache  = prop.getValue(
+        "metaServer.chunkServer.repairLoadWeight.cache",
+        repairLoadWeight_cache);
+
+    repairLoadWeight_numSrc  = prop.getValue(
+        "metaServer.chunkServer.repairLoadWeight.numSrc",
+        repairLoadWeight_numSrc);
+
+    repairLoadWeight_numDst  = prop.getValue(
+        "metaServer.chunkServer.repairLoadWeight.numDst",
+        repairLoadWeight_numDst);
+//subrata end
+
 }
 
 static seq_t RandomSeqNo()
@@ -2716,10 +2740,10 @@ ChunkServer::Verify(
 //subrata add
 int ChunkServer::getRepairChoiceWeight(bool hasCache)
 {
-    int weight = sereverRepairLoad.numOfActingSources + sereverRepairLoad.numOfFinalRepairs;
+    int weight = repairLoadWeight_numSrc*sereverRepairLoad.numOfActingSources + repairLoadWeight_numDst*sereverRepairLoad.numOfFinalRepairs;
     if(hasCache)
     {
-       weight += 100;  //weight increase for having a hot cache..
+       weight += repairLoadWeight_cache ;  //weight increase for having a hot cache..
     }
     return weight;
 }

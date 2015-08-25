@@ -8379,7 +8379,8 @@ void LayoutManager::SelectSetOfSourceServers(std::list<chunkId_t>& listOfRelated
 {
      //std::map<ChunkServerPtr, bool> doNotHaveCache;
   
-
+//subrata : temporary comment start
+#if 0
      std::map<ChunkServerPtr, bool> skippingServers;
      std::map<int, ChunkServerPtr> :: iterator servStart = availableSourceServeres.begin(); 
      std::map<int, ChunkServerPtr> :: iterator servEnd = availableSourceServeres.end();
@@ -8433,6 +8434,49 @@ void LayoutManager::SelectSetOfSourceServers(std::list<chunkId_t>& listOfRelated
        stillMissing =  serverCountNeeded - (int)selectedSources.size();
        assert(stillMissing <= 0); //otherwise we do not have enough servers. Something went wrong
      }
+#endif
+//subrata : temporary comment end
+//subrata :  new sorting based selection start
+
+  std::vector<ChunkServerPtr> srcChunkServers(availableSourceServeres.size());
+
+  std::map<int, ChunkServerPtr> :: iterator servStart = availableSourceServeres.begin(); 
+  std::map<int, ChunkServerPtr> :: iterator servEnd = availableSourceServeres.end();
+  int i = 0;
+  for(; servStart != servEnd; servStart++)
+  {
+     srcChunkServers[i] = servStart->second;
+     i++;
+  }
+
+  std::sort(srcChunkServers.begin(), srcChunkServers.end(), ChunkServerSorter(haveCache));
+
+  std::vector<ChunkServerPtr> :: iterator vecStart = srcChunkServers.begin();
+  std::vector<ChunkServerPtr> :: iterator vecEnd = srcChunkServers.end();
+  for(; vecStart != vecEnd ; vecStart++)
+  {
+            ChunkServerPtr servrPtr = *vecStart;
+            std::map<std::string, bool> :: iterator cacheServerPos = haveCache.find(servrPtr->GetHostPortStr());
+            if(cacheServerPos != haveCache.end())
+            {               
+                //this server has cached the corresponding chunk 
+                selectedSources[servrPtr] = true;             //do we actually need to mark the servers which has cache ?
+            }               
+            else            
+            {               
+                //this server does not have a cache for this chunk
+                selectedSources[servrPtr] = false;
+            }      
+   
+            if((int)selectedSources.size() >= serverCountNeeded) 
+            {
+               break;  //we have got the number of server we wanted so we can now break the loop
+            }
+  }
+
+  return;
+
+//subrata :  new sorting based selection end
 
 }
 
@@ -8616,11 +8660,18 @@ int LayoutManager::PopulateDistributedRepairOperationTable(chunkId_t chunkId, st
 	std::map<ChunkServerPtr, bool> ::  iterator servIterEnd = selectedSources.end();
 	for(;servIter != servIterEnd; servIter++)
 	{
-	  ServersBeingUsedMap[servIter->first] = true;
-	  (repairInfo->RepairServersMap)[servIter->first] = true;
+          ChunkServerPtr theChunkServerPtr = servIter->first;
+
+	  ServersBeingUsedMap[theChunkServerPtr] = true;
+	  (repairInfo->RepairServersMap)[theChunkServerPtr] = true;
+
+         (theChunkServerPtr->sereverRepairLoad).numOfActingSources = (theChunkServerPtr->sereverRepairLoad).numOfActingSources + 1;
+          
 	}
 	ServersBeingUsedMap[destinationServer] = true; //mark the destination server as being used as well
 	(repairInfo->RepairServersMap)[destinationServer] = true;
+
+        (destinationServer->sereverRepairLoad).numOfFinalRepairs = (destinationServer->sereverRepairLoad).numOfFinalRepairs + 1;
 	
 	ChunkReapirServersBeingUsed[chunkId] = repairInfo;  //add the information corresponding to this chunk id
 
@@ -8706,8 +8757,11 @@ ChunkServerPtr LayoutManager::GetDestinationServerForRepair(std::map<std::string
    Servers::iterator chunkServerBegin = mChunkServers.begin(); 
    Servers::iterator chunkServerEnd = mChunkServers.end();
 
+
+#if 0
    ChunkServerPtr tentativeDestServer;
    bool hasTentative = false; 
+
    for( ; chunkServerBegin != chunkServerEnd; chunkServerBegin++ )
    {
       if(existingHosts.find((*chunkServerBegin)->GetHostPortStr()) == existingHosts.end())
@@ -8728,6 +8782,28 @@ ChunkServerPtr LayoutManager::GetDestinationServerForRepair(std::map<std::string
    //no  server found with no-clash.. take the first one
    chunkServerBegin = mChunkServers.begin();
    return (*chunkServerBegin);
+
+#endif
+   std::vector<ChunkServerPtr> probableDestinations(mChunkServers.size() - existingHosts.size());
+   int i = 0;
+   for( ; chunkServerBegin != chunkServerEnd; chunkServerBegin++ )
+   {
+      if(existingHosts.find((*chunkServerBegin)->GetHostPortStr()) != existingHosts.end())
+      {
+         continue;
+      }
+      probableDestinations[i] = (*chunkServerBegin);
+      i++;
+   }
+
+    std::map<std::string, bool> dummyCacheMap;
+    std::sort(probableDestinations.begin(), probableDestinations.end(), ChunkServerSorter(dummyCacheMap));
+
+    std::vector<ChunkServerPtr> :: iterator destinationBegin = probableDestinations.begin();
+  
+    return (*destinationBegin);  
+    
+
 }
 
 void LayoutManager::PopulateChunkServerOpListString(std::map<int,PartialDecodingInfo>& opMap, std::map<std::string, chunkId_t>& chunkServerToChunkIdMapForThisStripe, std::string& thisServerKey,  std::string& chunkServerOpListStr)

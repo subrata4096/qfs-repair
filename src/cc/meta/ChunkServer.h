@@ -876,6 +876,14 @@ protected:
     static string sSrvLoadPropName;
     static size_t sMaxChunksToEvacuate;
 
+    //subrata add
+    //weights for calculating a overall server weight for choosing servers during parallel repair
+    static int repairLoadWeight_cache;
+    static int repairLoadWeight_numSrc;
+    static int repairLoadWeight_numDst;
+
+   //subrata end
+
     /// For record append's, can this node be a chunk master
     bool mCanBeChunkMaster;
 
