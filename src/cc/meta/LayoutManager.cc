@@ -4835,6 +4835,21 @@ LayoutManager::AllocateChunk(
     StTmp<ChunkPlacement> placementTmp(mChunkPlacementTmp);
     ChunkPlacement&       placement = placementTmp.Get();
     if (r->stripedFileFlag) {
+
+     //subrata add
+     std::map<long, std::list<ChunkServerPtr > > :: iterator stripePos = stripeIdentifierToChunkServerMap.find(r->stripe_identifier); //get existing chunk ids belonging to this stripe. we are going to exclude all those servers
+     if(stripePos != stripeIdentifierToChunkServerMap.end())
+     {
+       std::list<ChunkServerPtr> :: iterator listStart = (stripePos->second).begin();
+       std::list<ChunkServerPtr> :: iterator listEnd = (stripePos->second).end(); 
+       for(; listStart != listEnd; listStart++)
+       {
+            //we have already used these servers. so mark them as exclude
+	    placement.ExcludeServerAndRack(*listStart, 1);   //adding the server to list for exclude
+       }
+    }
+    //subrata end
+
         // For replication greater than one do the same placement, but
         // only take into the account write masters, or the chunk server
         // hosting the first replica.
@@ -4957,11 +4972,21 @@ LayoutManager::AllocateChunk(
             if (! cs) {
                 break;
             }
-            if (placement.IsUsingServerExcludes() &&
+            /*  subrata comment as " PROBABLY this will make sure that we will never store 2 chunks on the same server. We want to enforce that.
+            if (placement.IsUsingServerExcludes() &&                         //subrata : PROBABLY this will make sure that we will never store 2 chunks on the same server.
                     find(r->servers.begin(), r->servers.end(), cs) !=
                     r->servers.end()) {
                 continue;
             }
+            */
+            //subrata add  : as PROBABLY this will make sure that we will never store 2 chunks on the same server. We want to enforce that.
+            if (                                //subrata : PROBABLY this will make sure that we will never store 2 chunks on the same server.
+                    find(r->servers.begin(), r->servers.end(), cs) !=
+                    r->servers.end()) {               //subrata we always want to skip the the servers we have already used
+                continue;
+            }
+           //subrata end
+
             numCandidates++;
             if (r->appendChunk && ! mAppendPlacementIgnoreMasterSlaveFlag) {
                 // for record appends, to avoid deadlocks for
@@ -5158,6 +5183,24 @@ LayoutManager::AllocateChunk(
         r->validForTime = 0;
     }
     for (size_t i = r->servers.size(); i-- > 0; ) {
+
+        //subrata add :  record where I am allocating the chunk
+        //We are keeping a new table with stripe_identifier(stripeID) to vector<chunkId_t> mapping. Our new recovery will be interms of this stripe_identifier and we will use it to communicate with chunk-servers as well. Specially for recovery.
+
+        std::map<long, std::list<ChunkServerPtr> > :: iterator stripePos = stripeIdentifierToChunkServerMap.find(r->stripe_identifier);
+        if(stripePos == stripeIdentifierToChunkServerMap.end())
+        {
+           std::list<ChunkServerPtr> chunkServerList;
+           chunkServerList.push_back(r->servers[i]);
+           stripeIdentifierToChunkServerMap[r->stripe_identifier] = chunkServerList;
+        }
+        else
+        {
+           stripeIdentifierToChunkServerMap[r->stripe_identifier].push_back(r->servers[i]);
+        }
+       
+        //subrata end
+
         r->servers[i]->AllocateChunk(r, i == 0 ? r->leaseId : -1, tiers[i]);
     }
     // Handle possible recursion ensure that request still valid.
@@ -8892,6 +8935,7 @@ ChunkServerPtr LayoutManager::CoordinateTheReplicationProcess(CSMap::Entry& c, c
                remainingSourceServerIndex++;
 
                std::string theSrcServerName  =  (*servIterStart)->GetHostPortStr();
+               KFS_LOG_STREAM_DEBUG << "subrata : chunkID = " << vecStart->second << " is hosted by : " << theSrcServerName << KFS_LOG_EOM;
 
                assert(chunkServerToChunkIdMapForThisStripe.find(theSrcServerName) == chunkServerToChunkIdMapForThisStripe.end()); //Be aware this is wrong! In extreme case, one server might host multiple id of the same stripe!
 

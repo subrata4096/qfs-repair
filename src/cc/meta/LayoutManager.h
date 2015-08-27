@@ -983,6 +983,7 @@ public:
     //subrata add
   
     std::map<long, std::map<int, chunkId_t> > stripeIdentifierToChunkIDMap; // a map which keeps the stripe identifier as the key and list of associated chunks as value     
+    std::map<long, std::list<ChunkServerPtr> > stripeIdentifierToChunkServerMap; // a map which keeps the stripe identifier as the key and list chunkservers as value     
     void print_stripeIdentifierToChunkIDMap();
     bool serverSet; //for test
 

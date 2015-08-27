@@ -205,7 +205,8 @@ main(int argc, char **argv)
     }
 
     if (help || (serverHost == "") || (port < 0)) {
-        cout << "Usage: " << argv[0] << " -s <meta server name> -p <port> -c <chunk size> -f <number-of-files-to-create> "
+        //cout << "Usage: " << argv[0] << " -s <meta server name> -p <port> -c <chunk size> -f <number-of-files-to-create> "
+        cout << "Usage: " << argv[0] << " -s <meta server name> -p <port> -f <number-of-files-to-create> "
              << endl;
         exit(0);
     }
