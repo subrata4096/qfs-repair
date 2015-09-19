@@ -26,6 +26,7 @@
 #include "RSStriper.h"
 #include "Writer.h"
 #include "ECMethod.h"
+#include "KfsOps.h"
 
 #include "kfsio/IOBuffer.h"
 #include "kfsio/checksum.h"
@@ -1553,6 +1554,7 @@ private:
         int Read(
             Outer& inOuter)
         {
+            KFS_LOG_STREAM_DEBUG << "subrata Read(Outer& inOuter) called with mDoneFlag=" << mDoneFlag << KFS_LOG_EOM;
             if (mSize <= 0 || mInFlightFlag || mDoneFlag) {
                 return 0;
             }
@@ -2094,6 +2096,7 @@ private:
             RequestId inRequestId)
         {
             const int theStripeIdx = inBuffer.GetStripeIdx();
+            kfsChunkId_t theMissingChunkId = inBuffer.mChunkId;
             const int theBufCount  = inOuter.GetBufferCount();
             QCRTASSERT(
                 inPBuffer.mSize >= 0 &&
@@ -2116,7 +2119,7 @@ private:
                     " round: "       << mRecoveryRound    <<
                 KFS_LOG_EOM;
                 if (inNewFailureFlag && mRecoveryRound <= 0 &&
-                        Recovery(inOuter)) {
+                        Recovery(inOuter, theMissingChunkId)) {
                     return;
                 }
             } else if (mRecoveryRound > 0 &&
@@ -2233,11 +2236,13 @@ private:
         ~Request()
             {}
         bool Recovery(
-            Outer& inOuter)
+            Outer& inOuter, kfsChunkId_t theMissingChunkId)
         {
             if (++mBadStripeCount > inOuter.mRecoveryStripeCount) {
                 return false;
             }
+
+            
             if (mBadStripeCount <= 1 && mRecoverySize <= 0) {
                 InitRecovery(inOuter);
             }
@@ -2247,6 +2252,12 @@ private:
             const int i = inOuter.mStripeCount + mBadStripeCount - 1;
             mPendingCount += GetBuffer(i).InitRecoveryRead(
                 inOuter, mRecoveryPos + i * (Offset)CHUNKSIZE, mRecoverySize);
+            
+            /*
+            RepairOp repairOp(0, theMissingChunkId); //seq is 0
+            inOuter.EnqueueMeta(repairOp); 
+            */
+
             Read(inOuter);
             return true;
         }

@@ -61,6 +61,7 @@ enum KfsOp_t {
     CMD_UNKNOWN,
     // Meta-data server RPCs
     CMD_GETALLOC,
+    //CMD_REPAIR_REBUILD,
     CMD_GETLAYOUT,
     CMD_ALLOCATE,
     CMD_TRUNCATE,
@@ -622,6 +623,33 @@ struct GetAllocOp: public KfsOp {
         return os;
     }
 };
+
+/*
+//subrata add
+
+struct RepairOp: public KfsOp {
+    kfsChunkId_t           missing_chunkId;
+    RepairOp(kfsSeq_t s,kfsChunkId_t& theId)
+        : KfsOp(CMD_REPAIR_REBUILD, s),
+          missing_chunkId(theId)
+        {}
+    void Request(ostream& os);
+    virtual void ParseResponseHeaderSelf(const Properties& prop);
+    virtual ostream& ShowSelf(ostream& os) const {
+        os <<
+            "repair_rebuild:"
+            " missing_chunkId: " << missing_chunkId
+            //" chunkId: " << chunkId <<
+            //" version: " << chunkVersion <<
+            //" ordered: " << serversOrderedFlag <<
+            //" servers: " << chunkServers.size()
+        ;
+        return os;
+    }
+};
+
+//subrata end
+*/
 
 struct ChunkLayoutInfo {
     ChunkLayoutInfo()

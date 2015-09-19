@@ -72,13 +72,13 @@ long stripeSize = 32u <<  20; //we will keep it same as chunksize in Kfstypes.h
 long numBytes = 6 * stripeSize; //will create one stripe  384 = 64 x 6  (each chunk is 64 MB)
 //int numBytes = 768 << 20;  //will create 2 stripes for the whole file
 
-void printLocationOfTheChunksForAFile(string& fileName, long numBytes)
+void printLocationOfTheChunksForAFile(string& fileName, long readStartPos, long numBytes)
 {
      cout << " ----- **************************************** ---- " << endl;
      cout << "File name = " << fileName << endl;
   
      vector< vector <string> > retVec;
-    int retVal = gKfsClient->GetDataLocation(fileName.c_str(),0,numBytes,retVec);
+    int retVal = gKfsClient->GetDataLocation(fileName.c_str(),readStartPos,numBytes,retVec);
     vector< vector <string> > :: iterator iiv, jjv;
     iiv = retVec.begin();
     jjv = retVec.end();
@@ -167,7 +167,36 @@ void readFile(string& fname , int fd)
     }
 
     delete [] copyBuf;
-    printLocationOfTheChunksForAFile(fname, numBytes);
+    //printLocationOfTheChunksForAFile(fname, 0, numBytes);
+}
+void degraded_readFile(string& fname , int fd, int readPos, int readLength)
+{
+   
+    cout << "This is for degraded read " << readPos << endl;
+    int res;
+    // Re-open the file
+    if ((fd = gKfsClient->Open(fname.c_str(), O_RDWR)) < 0) {
+        cout << "Open on : " << fname << " failed: " << KFS::ErrorCodeToStr(fd) << endl;
+        exit(-1);
+    }
+
+   printLocationOfTheChunksForAFile(fname, readPos, readLength);
+   
+  getchar();
+
+    char *copyBuf = new char[readLength];
+
+    // read some bytes
+    res = gKfsClient->PRead(fd, readPos, copyBuf, readLength);
+    if (res != readLength) {
+        if (res < 0) {
+            cout << "Read on : " << fname << " failed: " << KFS::ErrorCodeToStr(res) << endl;
+            exit(-1);
+        }
+    }
+
+    delete [] copyBuf;
+    //printLocationOfTheChunksForAFile(fname, 0, numBytes);
 }
 
 int
@@ -261,6 +290,9 @@ main(int argc, char **argv)
     for (size_t i = 0; i < entries.size(); i++) {
         cout << entries[i] << endl;
     }
+ 
+    cout << numFiles << " Waiting for read .."  << endl;
+
 
     for(int ii=0; ii < numFiles; ii++)
     {
@@ -269,11 +301,22 @@ main(int argc, char **argv)
         ss << baseDir;
         ss << "/foo." << ii;
         string fname = ss.str();
-        readFile(fname , fdArr[ii]);
+        printLocationOfTheChunksForAFile(fname, 0, numBytes);
+    }
+
+    for(int ii=0; ii < numFiles; ii++)
+    {
+        // Create a simple file with default replication (at most 3)
+        std::stringstream ss;
+        ss << baseDir;
+        ss << "/foo." << ii;
+        string fname = ss.str();
+        //readFile(fname , fdArr[ii]);
+        degraded_readFile(fname, fdArr[ii],0, stripeSize);  //filename,fd, starting positing for read, length of read 
     }
 
     cout << numFiles << " Written and Read back." << "  Now waiting. Do the experiment.." << endl;
-    //getchar();
+    getchar();
     //getchar();
 
     /*
@@ -290,7 +333,7 @@ main(int argc, char **argv)
     int numChunks = gKfsClient->GetNumChunks(tempFilename.c_str());
     int replicationFactor = gKfsClient->GetReplicationFactor(tempFilename.c_str());
     cout << "Number of chunks are = " << numChunks << ", " << "Replication facto = " << replicationFactor << endl;
-    printLocationOfTheChunksForAFile(tempFilename, numBytes);
+    printLocationOfTheChunksForAFile(tempFilename, 0, numBytes);
    // subrata end
 
     // rename the file
@@ -341,7 +384,7 @@ main(int argc, char **argv)
 
    //subrata start
     //check if crash of chunkserver and subsequent repair actually moved the data?
-    printLocationOfTheChunksForAFile(newFilename, numBytes);
+    printLocationOfTheChunksForAFile(newFilename, 0, numBytes);
    // subrata end
 
     // Verify what we read matches what we wrote

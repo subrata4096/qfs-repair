@@ -8538,6 +8538,18 @@ bool doesServerNameMatch(std::map<ChunkServerPtr, bool>& listOfServers, std::str
     }
     return false;
 }
+/*
+//subrata distribution code for 8+3
+int LayoutManager::PopulateDistributedRepairOperationTable_For_8_3(chunkId_t chunkId, std::list<chunkId_t>& listOfRelatedChunkIds, std::map<std::string, std::map<int,PartialDecodingInfo> >& operationMapForChunkServers, std::map<int, ChunkServerPtr>& eightRemainingSourceServeres, ChunkServerPtr destinationServer)
+{
+ 
+}
+//subrata distribution code for 12+4
+int LayoutManager::PopulateDistributedRepairOperationTable_For_12_4(chunkId_t chunkId, std::list<chunkId_t>& listOfRelatedChunkIds, std::map<std::string, std::map<int,PartialDecodingInfo> >& operationMapForChunkServers, std::map<int, ChunkServerPtr>& eightRemainingSourceServeres, ChunkServerPtr destinationServer)
+{
+
+}
+*/ 
 
 int LayoutManager::PopulateDistributedRepairOperationTable(chunkId_t chunkId, std::list<chunkId_t>& listOfRelatedChunkIds, std::map<std::string, std::map<int,PartialDecodingInfo> >& operationMapForChunkServers, std::map<int, ChunkServerPtr>& eightRemainingSourceServeres, ChunkServerPtr destinationServer)
 {
@@ -9095,7 +9107,8 @@ LayoutManager::ReplicateChunk(
     }
 
     //subrata add
-     ChunkServerPtr myCS = CoordinateTheReplicationProcess(clli, recoveryInfo);
+    //Commenting testing for degraded read
+    ChunkServerPtr myCS = CoordinateTheReplicationProcess(clli, recoveryInfo);
 
    // *********************************
      KFS_LOG_STREAM_DEBUG << "subrata: WE ARE SKIPPING THE OLD REPAIR CODE FOR NOW BY 'RETURNING 0' FROM HERE " << KFS_LOG_EOM;

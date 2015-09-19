@@ -371,7 +371,19 @@ GetAllocOp::Request(ostream &os)
         "Chunk-offset: " << fileOffset        << "\r\n"
     "\r\n";
 }
-
+/*
+//subrata add
+//to be called during degraded read... Meta server will schedule repair 
+void
+RepairOp::Request(ostream &os)
+{
+    os <<
+        "REPAIR_REBUILD\r\n"   << ReqHeaders(*this) <<
+        "missing_chunkId: " << missing_chunkId        << "\r\n"
+    "\r\n";
+}
+//subrata end
+*/
 void
 GetLayoutOp::Request(ostream &os)
 {

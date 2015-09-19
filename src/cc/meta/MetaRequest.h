@@ -83,6 +83,7 @@ using std::less;
     f(GETLAYOUT) \
     f(ALLOCATE) \
     f(TRUNCATE) \
+    /*f(REPAIR_REBUILD) *//*subrata : rebuild this chunk with PPD technique */ \
     f(RENAME) \
     f(SETMTIME) /* Set the mtime on a specific file to support cp -p */ \
     f(CHANGE_FILE_REPLICATION) /* Client is asking for a change in file's replication factor */ \

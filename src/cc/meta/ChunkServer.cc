@@ -2740,7 +2740,7 @@ ChunkServer::Verify(
 //subrata add
 int ChunkServer::getRepairChoiceWeight(bool hasCache)
 {
-    int weight = repairLoadWeight_numSrc*sereverRepairLoad.numOfActingSources + repairLoadWeight_numDst*sereverRepairLoad.numOfFinalRepairs;
+    int weight = 0 - repairLoadWeight_numSrc*sereverRepairLoad.numOfActingSources - repairLoadWeight_numDst*sereverRepairLoad.numOfFinalRepairs;
     if(hasCache)
     {
        weight += repairLoadWeight_cache ;  //weight increase for having a hot cache..
