@@ -8538,18 +8538,487 @@ bool doesServerNameMatch(std::map<ChunkServerPtr, bool>& listOfServers, std::str
     }
     return false;
 }
-/*
+
 //subrata distribution code for 8+3
 int LayoutManager::PopulateDistributedRepairOperationTable_For_8_3(chunkId_t chunkId, std::list<chunkId_t>& listOfRelatedChunkIds, std::map<std::string, std::map<int,PartialDecodingInfo> >& operationMapForChunkServers, std::map<int, ChunkServerPtr>& eightRemainingSourceServeres, ChunkServerPtr destinationServer)
 {
- 
+   std::map<int,PartialDecodingInfo> opMap2, opMap4, opMap6, opMap8, opMapDst; //operation maps for source server index 2,4,6 and Dst
+
+  std::map<ChunkServerPtr, bool> selectedSources;
+        int serverCountNeeded = 8;   //according to 8 + 3 RS coding. Have to change for other codes..
+
+        std::map<std::string, bool> haveCache;
+        getServersWhichHaveCache(listOfRelatedChunkIds, haveCache);
+
+        SelectSetOfSourceServers(listOfRelatedChunkIds, haveCache, serverCountNeeded, eightRemainingSourceServeres, selectedSources);
+
+  //     /*
+        std::string key1="", key2="", key3="", key4="", key5="", key6="", key7="", key8="";
+
+        std::map<std::string, bool> :: iterator cacheServerStart = haveCache.begin();
+        std::map<std::string, bool> :: iterator cacheServerEnd = haveCache.end();
+        int alreadyAssignedCount = 0;
+
+        for( ; cacheServerStart != cacheServerEnd; cacheServerStart++)
+        {
+             if(doesServerNameMatch(selectedSources, cacheServerStart->first))
+             {
+                 //this server was selected
+                 if(alreadyAssignedCount == 0)
+                 {
+                    key1= cacheServerStart->first;
+                    alreadyAssignedCount++;
+                 }
+                 else if(alreadyAssignedCount == 1)
+                 {
+                    key3= cacheServerStart->first;
+                    alreadyAssignedCount++;
+                 }
+                 else if(alreadyAssignedCount == 2)
+                 {
+                    key5= cacheServerStart->first;
+                    alreadyAssignedCount++;
+                 }
+                 else if(alreadyAssignedCount == 3)
+                 {
+                    key7= cacheServerStart->first;
+                    alreadyAssignedCount++;
+                 }
+                 else
+                 {
+                     if(key2.empty())
+                     {
+                        key2= cacheServerStart->first;
+                        alreadyAssignedCount++;
+                     }
+                     else if(key4.empty())
+                     {
+                        key4= cacheServerStart->first;
+                        alreadyAssignedCount++;
+                     }
+                     else if(key6.empty())
+                     {
+                        key6= cacheServerStart->first;
+                        alreadyAssignedCount++;
+                     }
+                     else if(key8.empty())
+                     {
+                        key8= cacheServerStart->first;
+                        alreadyAssignedCount++;
+                     }
+
+                 }
+             }
+        }
+
+        if(alreadyAssignedCount < serverCountNeeded)
+        {
+                std::map<ChunkServerPtr, bool> ::  iterator servIter = selectedSources.begin();
+                std::map<ChunkServerPtr, bool> ::  iterator servIterEnd = selectedSources.end();
+                for(  ; servIter != servIterEnd ; servIter++)
+                {
+                     if(servIter->second == true)
+                     {
+                          //this server has this chunk in the cache...and we have probably used it already...so skipping...
+                          continue;
+                     }
+                     if(key1.empty())
+                     {
+                        key1= servIter->first->GetHostPortStr();
+                        alreadyAssignedCount++;
+                     }
+                     else if(key2.empty())
+                     {
+                        key2= servIter->first->GetHostPortStr();
+                        alreadyAssignedCount++ ;
+                     }
+                     else if(key3.empty())
+                     {
+                        key3= servIter->first->GetHostPortStr();
+                        alreadyAssignedCount++;
+                     }
+                     else if(key4.empty())
+                     {
+                        key4= servIter->first->GetHostPortStr();
+                        alreadyAssignedCount++;
+                     }
+                     else if(key5.empty())
+                     {
+                        key5= servIter->first->GetHostPortStr();
+                        alreadyAssignedCount++;
+                     }
+                     else if(key6.empty())
+                     {
+                        key6= servIter->first->GetHostPortStr();
+                        alreadyAssignedCount++;
+                     }
+                     else if(key7.empty())
+                     {
+                        key7= servIter->first->GetHostPortStr();
+                        alreadyAssignedCount++;
+                     }
+                     else if(key8.empty())
+                     {
+                        key8= servIter->first->GetHostPortStr();
+                        alreadyAssignedCount++;
+                     }
+              }
+        }
+
+    //    */
+
+        std::map<ChunkServerPtr, bool> ::  iterator servIter = selectedSources.begin();
+/*
+     
+           
+        std::string key1 = servIter->first->GetHostPortStr(); servIter++;
+        std::string key2 = servIter->first->GetHostPortStr(); servIter++;
+        std::string key3 = servIter->first->GetHostPortStr(); servIter++;
+        std::string key4 = servIter->first->GetHostPortStr(); servIter++;
+        std::string key5 = servIter->first->GetHostPortStr(); servIter++;
+        std::string key6 = servIter->first->GetHostPortStr();
+        
+*/
+
+        std::string dstKey = destinationServer->GetHostPortStr();
+
+
+        KFS_LOG_STREAM_ERROR << "subrata : printing chosen servers : " << " key1= " << key1 << " key2= " << key2 << " key3= " << key3 << " key4= " << key4 << " key5= " << key5 << " key6= " << key6 << " key7= " << key7 << " key8= " << key8 << " dstKey= " << dstKey << KFS_LOG_EOM;
+
+        //mark the servers being used. So that we can try to avoid them for other set of repairs
+        //
+        RepairServerInfo* repairInfo = new RepairServerInfo();
+
+
+        //std::map<ChunkServerPtr, bool> ::  iterator servIter = selectedSources.begin();
+        std::map<ChunkServerPtr, bool> ::  iterator servIterEnd = selectedSources.end();
+        for(;servIter != servIterEnd; servIter++)
+        {
+          ChunkServerPtr theChunkServerPtr = servIter->first;
+
+          ServersBeingUsedMap[theChunkServerPtr] = true;
+          (repairInfo->RepairServersMap)[theChunkServerPtr] = true;
+
+         (theChunkServerPtr->sereverRepairLoad).numOfActingSources = (theChunkServerPtr->sereverRepairLoad).numOfActingSources + 1;
+
+        }
+        ServersBeingUsedMap[destinationServer] = true; //mark the destination server as being used as well
+        (repairInfo->RepairServersMap)[destinationServer] = true;
+
+        (destinationServer->sereverRepairLoad).numOfFinalRepairs = (destinationServer->sereverRepairLoad).numOfFinalRepairs + 1;
+
+        ChunkReapirServersBeingUsed[chunkId] = repairInfo;  //add the information corresponding to this chunk id
+ //ops for round or temporal time = 1
+        PartialDecodingInfo op21(1,key1); //Meaning:  get from 12.0.0.1:21001 AFTER multiplying by decoding coeff "1" and XOR with myself
+        PartialDecodingInfo op43(1,key3);
+        PartialDecodingInfo op65(1,key5);
+        PartialDecodingInfo op87(1,key7);
+        opMap2[1] = op21;     //do this operation for timestep 1 to be performed at source server index = 2
+        opMap4[1] = op43;     //do this operation for timestep 1
+        opMap6[1] = op65;     //do this operation for timestep 1
+        opMap8[1] = op87;     //do this operation for timestep 1
+
+
+        //ops for round or temporal time = 2
+        PartialDecodingInfo op42(1,key2);
+        PartialDecodingInfo op86(1,key6);
+        //PartialDecodingInfo opDst6(1,key6);
+        opMap4[2] = op42;     //do this operation for timestep 2
+        opMap8[2] = op86;     //do this operation for timestep 2
+        //opMapDst[2] = opDst6;   //do this operation for timestep 2
+
+        //ops for round or temporal time = 3
+        PartialDecodingInfo op84(1,key4);
+        opMap8[3] = op84;     //do this operation for timestep 3
+
+        //ops for round or temporal time = 4
+        PartialDecodingInfo opDst8(1,key8);
+        opMapDst[4] = opDst8;   //do this operation for timestep 3
+
+        //Now assign these ops to respective servers who will coordinate the operations
+        operationMapForChunkServers[key2] = opMap2;  //list of operations to be performed by server = 2
+        operationMapForChunkServers[key4] = opMap4;  //list of operations to be performed by server = 4
+        operationMapForChunkServers[key6] = opMap6;
+        operationMapForChunkServers[key8] = opMap8;
+        operationMapForChunkServers[dstKey] = opMapDst;  //list of operations to be performed by final destination server where the repaired chunk will be hosted
+
+
+        KFS_LOG_STREAM_DEBUG << "subrata PopulateDistributedRepairOperationTable : for " << key2 << " ops= " << op21.hosting_server << KFS_LOG_EOM;
+        KFS_LOG_STREAM_DEBUG << "subrata PopulateDistributedRepairOperationTable : for " << key4 << " ops= " << op43.hosting_server << ", " << op42.hosting_server << KFS_LOG_EOM;
+        KFS_LOG_STREAM_DEBUG << "subrata PopulateDistributedRepairOperationTable : for " << key6 << " ops= " << op65.hosting_server << KFS_LOG_EOM;
+        KFS_LOG_STREAM_DEBUG << "subrata PopulateDistributedRepairOperationTable : for " << key8 << " ops= " << op87.hosting_server << KFS_LOG_EOM;
+        KFS_LOG_STREAM_DEBUG << "subrata PopulateDistributedRepairOperationTable : for " << dstKey << " ops= " << opDst8.hosting_server << KFS_LOG_EOM;
+
+        return 0;
+
 }
+ 
+
+
 //subrata distribution code for 12+4
 int LayoutManager::PopulateDistributedRepairOperationTable_For_12_4(chunkId_t chunkId, std::list<chunkId_t>& listOfRelatedChunkIds, std::map<std::string, std::map<int,PartialDecodingInfo> >& operationMapForChunkServers, std::map<int, ChunkServerPtr>& eightRemainingSourceServeres, ChunkServerPtr destinationServer)
 {
+  std::map<int,PartialDecodingInfo> opMap2, opMap4, opMap6, opMap8, opMap10, opMap12, opMapDst; //operation maps for source server index 2,4,6 and Dst
+
+std::map<ChunkServerPtr, bool> selectedSources;
+        int serverCountNeeded = 12;   //according to 12 + 4 RS coding. Have to change for other codes..
+
+        std::map<std::string, bool> haveCache;
+        getServersWhichHaveCache(listOfRelatedChunkIds, haveCache);
+
+        SelectSetOfSourceServers(listOfRelatedChunkIds, haveCache, serverCountNeeded, eightRemainingSourceServeres, selectedSources);
+
+  //     /*
+        std::string key1="", key2="", key3="", key4="", key5="", key6="", key7="", key8="", key9="", key10="", key11="", key12="";
+
+        std::map<std::string, bool> :: iterator cacheServerStart = haveCache.begin();
+        std::map<std::string, bool> :: iterator cacheServerEnd = haveCache.end();
+        int alreadyAssignedCount = 0;
+
+        for( ; cacheServerStart != cacheServerEnd; cacheServerStart++)
+        {
+             if(doesServerNameMatch(selectedSources, cacheServerStart->first))
+             {
+                 //this server was selected
+                 if(alreadyAssignedCount == 0)
+                 {
+                    key1= cacheServerStart->first;
+                    alreadyAssignedCount++;
+                 }
+                 else if(alreadyAssignedCount == 1)
+                 {
+                    key3= cacheServerStart->first;
+                    alreadyAssignedCount++;
+                 }
+                 else if(alreadyAssignedCount == 2)
+                 {
+                    key5= cacheServerStart->first;
+                    alreadyAssignedCount++;
+                 }
+                 else if(alreadyAssignedCount == 3)
+                 {
+                    key7= cacheServerStart->first;
+                    alreadyAssignedCount++;
+                 }
+                 else if(alreadyAssignedCount == 4)
+                 {
+                    key9= cacheServerStart->first;
+                    alreadyAssignedCount++;
+                 }
+                 else if(alreadyAssignedCount == 5)
+                 {
+                    key11= cacheServerStart->first;
+                    alreadyAssignedCount++;
+                 }
+                 else
+                 {
+                     if(key2.empty())
+                     {
+                        key2= cacheServerStart->first;
+                        alreadyAssignedCount++;
+                     }
+                     else if(key4.empty())
+                     {
+                        key4= cacheServerStart->first;
+                        alreadyAssignedCount++;
+                     }
+                     else if(key6.empty())
+                     {
+                        key6= cacheServerStart->first;
+                        alreadyAssignedCount++;
+                     }
+                     else if(key6.empty())
+                     {
+                        key8= cacheServerStart->first;
+                        alreadyAssignedCount++;
+                     }
+                     else if(key6.empty())
+                     {
+                        key10= cacheServerStart->first;
+                        alreadyAssignedCount++;
+                     }
+                     else if(key6.empty())
+                     {
+                        key12= cacheServerStart->first;
+                        alreadyAssignedCount++;
+                     }
+
+                 }
+             }
+        }
+
+        if(alreadyAssignedCount < serverCountNeeded)
+        {
+                std::map<ChunkServerPtr, bool> ::  iterator servIter = selectedSources.begin();
+                std::map<ChunkServerPtr, bool> ::  iterator servIterEnd = selectedSources.end();
+                for(  ; servIter != servIterEnd ; servIter++)
+                {
+                     if(servIter->second == true)
+                     {
+                          //this server has this chunk in the cache...and we have probably used it already...so skipping...
+                          continue;
+                     }
+                     if(key1.empty())
+                     {
+                        key1= servIter->first->GetHostPortStr();
+                        alreadyAssignedCount++;
+                     }
+                     else if(key2.empty())
+                     {
+                        key2= servIter->first->GetHostPortStr();
+                        alreadyAssignedCount++ ;
+                     }
+                     else if(key3.empty())
+                     {
+                        key3= servIter->first->GetHostPortStr();
+                        alreadyAssignedCount++;
+                     }
+                     else if(key4.empty())
+                     {
+                        key4= servIter->first->GetHostPortStr();
+                        alreadyAssignedCount++;
+                     }
+                     else if(key5.empty())
+                     {
+                        key5= servIter->first->GetHostPortStr();
+                        alreadyAssignedCount++;
+                     }
+                     else if(key6.empty())
+                     {
+                        key6= servIter->first->GetHostPortStr();
+                        alreadyAssignedCount++;
+                     }
+                     else if(key7.empty())
+                     {
+                        key7= servIter->first->GetHostPortStr();
+                        alreadyAssignedCount++;
+                     }
+                     else if(key8.empty())
+                     {
+                        key8= servIter->first->GetHostPortStr();
+                        alreadyAssignedCount++;
+                     }
+                     else if(key9.empty())
+                     {
+                        key9= servIter->first->GetHostPortStr();
+                        alreadyAssignedCount++;
+                     }
+                     else if(key10.empty())
+                     {
+                        key10= servIter->first->GetHostPortStr();
+                        alreadyAssignedCount++;
+                     }
+                     else if(key11.empty())
+                     {
+                        key11= servIter->first->GetHostPortStr();
+                        alreadyAssignedCount++;
+                     }
+                     else if(key12.empty())
+                     {
+                        key12= servIter->first->GetHostPortStr();
+                        alreadyAssignedCount++;
+                     }
+              }
+        }
+
+    //    */
+
+        std::map<ChunkServerPtr, bool> ::  iterator servIter = selectedSources.begin();
+/*
+     
+           
+        std::string key1 = servIter->first->GetHostPortStr(); servIter++;
+        std::string key2 = servIter->first->GetHostPortStr(); servIter++;
+        std::string key3 = servIter->first->GetHostPortStr(); servIter++;
+        std::string key4 = servIter->first->GetHostPortStr(); servIter++;
+        std::string key5 = servIter->first->GetHostPortStr(); servIter++;
+        std::string key6 = servIter->first->GetHostPortStr();
+        
+*/
+
+        std::string dstKey = destinationServer->GetHostPortStr();
+
+
+        KFS_LOG_STREAM_ERROR << "subrata : printing chosen servers : " << " key1= " << key1 << " key2= " << key2 << " key3= " << key3 << " key4= " << key4 << " key5= " << key5 << " key6= " << key6 << " key7= " << key7 << " key8= " << key8 << " key9= " << key9 << " key10= " << key10 << " key11= " << key11 << " key12= " << key12 << " dstKey= " << dstKey << KFS_LOG_EOM;
+
+        //mark the servers being used. So that we can try to avoid them for other set of repairs
+        //
+        RepairServerInfo* repairInfo = new RepairServerInfo();
+
+
+        //std::map<ChunkServerPtr, bool> ::  iterator servIter = selectedSources.begin();
+        std::map<ChunkServerPtr, bool> ::  iterator servIterEnd = selectedSources.end();
+        for(;servIter != servIterEnd; servIter++)
+        {
+          ChunkServerPtr theChunkServerPtr = servIter->first;
+
+          ServersBeingUsedMap[theChunkServerPtr] = true;
+          (repairInfo->RepairServersMap)[theChunkServerPtr] = true;
+
+         (theChunkServerPtr->sereverRepairLoad).numOfActingSources = (theChunkServerPtr->sereverRepairLoad).numOfActingSources + 1;
+
+        }
+        ServersBeingUsedMap[destinationServer] = true; //mark the destination server as being used as well
+        (repairInfo->RepairServersMap)[destinationServer] = true;
+
+        (destinationServer->sereverRepairLoad).numOfFinalRepairs = (destinationServer->sereverRepairLoad).numOfFinalRepairs + 1;
+
+        ChunkReapirServersBeingUsed[chunkId] = repairInfo;  //add the information corresponding to this chunk id
+ //ops for round or temporal time = 1
+        PartialDecodingInfo op21(1,key1); //Meaning:  get from 12.0.0.1:21001 AFTER multiplying by decoding coeff "1" and XOR with myself
+        PartialDecodingInfo op43(1,key3);
+        PartialDecodingInfo op65(1,key5);
+        PartialDecodingInfo op87(1,key7);
+        PartialDecodingInfo op109(1,key9);
+        PartialDecodingInfo op1211(1,key11);
+
+        opMap2[1] = op21;     //do this operation for timestep 1 to be performed at source server index = 2
+        opMap4[1] = op43;     //do this operation for timestep 1
+        opMap6[1] = op65;     //do this operation for timestep 1
+        opMap8[1] = op87;     //do this operation for timestep 1
+        opMap10[1] = op109;     //do this operation for timestep 1
+        opMap12[1] = op1211;   //do this operation for timestep 1
+
+
+        //ops for round or temporal time = 2
+        PartialDecodingInfo op42(1,key2);
+        PartialDecodingInfo op86(1,key6);
+        PartialDecodingInfo op1210(1,key10);
+        opMap4[2] = op42;     //do this operation for timestep 2
+        opMap8[2] = op86;     //do this operation for timestep 2
+        opMap12[2] = op1210;     //do this operation for timestep 2
+
+        //ops for round or temporal time = 3
+        PartialDecodingInfo op84(1,key4);
+        PartialDecodingInfo opDst12(1,key12);
+        opMapDst[3] = opDst12;   //do this operation for timestep 3
+        
+        //ops for round or temporal time = 4
+        PartialDecodingInfo opDst8(1,key8);
+        opMapDst[4] = opDst8;   //do this operation for timestep 3
+
+        //Now assign these ops to respective servers who will coordinate the operations
+        operationMapForChunkServers[key2] = opMap2;  //list of operations to be performed by server = 2
+        operationMapForChunkServers[key4] = opMap4;  //list of operations to be performed by server = 4
+        operationMapForChunkServers[key6] = opMap6;
+        operationMapForChunkServers[key8] = opMap8;
+        operationMapForChunkServers[key10] = opMap10;
+        operationMapForChunkServers[key12] = opMap12;
+        operationMapForChunkServers[dstKey] = opMapDst;  //list of operations to be performed by final destination server where the repaired chunk will be hosted
+
+
+        KFS_LOG_STREAM_DEBUG << "subrata PopulateDistributedRepairOperationTable : for " << key2 << " ops= " << op21.hosting_server << KFS_LOG_EOM;
+        KFS_LOG_STREAM_DEBUG << "subrata PopulateDistributedRepairOperationTable : for " << key4 << " ops= " << op43.hosting_server << ", " << op42.hosting_server << KFS_LOG_EOM;
+        KFS_LOG_STREAM_DEBUG << "subrata PopulateDistributedRepairOperationTable : for " << key6 << " ops= " << op65.hosting_server << KFS_LOG_EOM;
+        KFS_LOG_STREAM_DEBUG << "subrata PopulateDistributedRepairOperationTable : for " << key8 << " ops= " << op87.hosting_server << KFS_LOG_EOM;
+        KFS_LOG_STREAM_DEBUG << "subrata PopulateDistributedRepairOperationTable : for " << key10 << " ops= " << op109.hosting_server << KFS_LOG_EOM;
+        KFS_LOG_STREAM_DEBUG << "subrata PopulateDistributedRepairOperationTable : for " << key12 << " ops= " << op1211.hosting_server << KFS_LOG_EOM;
+        KFS_LOG_STREAM_DEBUG << "subrata PopulateDistributedRepairOperationTable : for " << dstKey << " ops= " << opDst12.hosting_server << ", " << opDst8.hosting_server << KFS_LOG_EOM;
+
+        return 0;
 
 }
-*/ 
+  
 
 int LayoutManager::PopulateDistributedRepairOperationTable(chunkId_t chunkId, std::list<chunkId_t>& listOfRelatedChunkIds, std::map<std::string, std::map<int,PartialDecodingInfo> >& operationMapForChunkServers, std::map<int, ChunkServerPtr>& eightRemainingSourceServeres, ChunkServerPtr destinationServer)
 {

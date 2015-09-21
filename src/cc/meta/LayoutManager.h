@@ -2166,7 +2166,14 @@ protected:
 
    int GetPartialDecodingInformation(long stripe_identifier, int numStripes, int numRecoveryStripes, int missingIndex, std::map<int,int>& decodingCoefficient);
    
+   //for 6+3
    int PopulateDistributedRepairOperationTable(chunkId_t chunkId, std::list<chunkId_t>& listOfRelatedChunkIds, std::map<std::string, std::map<int,PartialDecodingInfo> >& operationMapForChunkServers,std::map<int, ChunkServerPtr>& eightRemainingSourceServeres, ChunkServerPtr destinationServer);
+
+  //for 8+3
+  int PopulateDistributedRepairOperationTable_For_8_3(chunkId_t chunkId, std::list<chunkId_t>& listOfRelatedChunkIds, std::map<std::string, std::map<int,PartialDecodingInfo> >& operationMapForChunkServers, std::map<int, ChunkServerPtr>& eightRemainingSourceServeres, ChunkServerPtr destinationServer);
+
+//for 12+4
+int PopulateDistributedRepairOperationTable_For_12_4(chunkId_t chunkId, std::list<chunkId_t>& listOfRelatedChunkIds, std::map<std::string, std::map<int,PartialDecodingInfo> >& operationMapForChunkServers, std::map<int, ChunkServerPtr>& eightRemainingSourceServeres, ChunkServerPtr destinationServer);
 
    void getServersWhichHaveCache(std::list<chunkId_t>& listOfRelatedChunkIds, std::map<std::string, bool>& haveCache);
 
