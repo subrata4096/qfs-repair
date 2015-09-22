@@ -102,19 +102,7 @@ chunkport   = 21010
 # in practice, have a chunkdir per disk.
 chunkdirs   = ~/qfsbase/chunk10/chunkdir101
 
-[chunkserver11]
-hostname    = localhost
-rundir      = ~/qfsbase/chunk11
-chunkport   = 21011
-# in practice, have a chunkdir per disk.
-chunkdirs   = ~/qfsbase/chunk11/chunkdir111
 
-[chunkserver12]
-hostname    = localhost
-rundir      = ~/qfsbase/chunk12
-chunkport   = 21012
-# in practice, have a chunkdir per disk.
-chunkdirs   = ~/qfsbase/chunk12/chunkdir121
 
 
 [webui]

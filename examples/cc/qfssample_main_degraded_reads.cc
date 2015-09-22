@@ -308,8 +308,6 @@ main(int argc, char **argv)
         printLocationOfTheChunksForAFile(fname, 0, numBytes);
     }
 
-//un-comment this to test degraded read part..
-#if 0
     for(int ii=0; ii < numFiles; ii++)
     {
         // Create a simple file with default replication (at most 3)
@@ -320,18 +318,6 @@ main(int argc, char **argv)
         //readFile(fname , fdArr[ii]);
         degraded_readFile(fname, fdArr[ii],0, stripeSize);  //filename,fd, starting positing for read, length of read 
         //degraded_readFile(fname, fdArr[ii],0, stripeSize-10);  //filename,fd, starting positing for read, length of read 
-    }
-#endif
- 
-    //following block is for "normal read" i.e. non-degraded reads. Comment it out for degraded reads..
-    for(int ii=0; ii < numFiles; ii++)
-    {
-        // Create a simple file with default replication (at most 3)
-        std::stringstream ss;
-        ss << baseDir;
-        ss << "/foo." << ii;
-        string fname = ss.str();
-        readFile(fname , fdArr[ii]);
     }
 
     cout << numFiles << " Written and Read back." << "  Now waiting. Do the experiment.." << endl;
