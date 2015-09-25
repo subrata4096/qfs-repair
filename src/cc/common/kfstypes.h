@@ -72,9 +72,9 @@ const kfsSTier_t kKfsSTierUndef = 127;
 const size_t     kKfsSTierCount = size_t(kKfsSTierMax) + 1;
 
 //extern size_t CHUNKSIZE = 64u << 20; //!< (64MB)
-const size_t CHUNKSIZE = 32u << 20; //!< (64MB) // we will change this for chunksize
+const size_t CHUNKSIZE = 64u << 20; //!< (64MB) // we will change this for chunksize
 //extern size_t CHUNK_READ_SIZE = CHUNKSIZE; //!< (64MB), making it equal to CHUNKSIZE //subrata : previously it was 1MB
-const size_t CHUNK_READ_SIZE = 32u << 20; //!< (64MB), making it equal to CHUNKSIZE //subrata : previously it was 1MB
+const size_t CHUNK_READ_SIZE = 64u << 20; //!< (64MB), making it equal to CHUNKSIZE //subrata : previously it was 1MB
 
 const int MAX_RPC_HEADER_LEN = 16 << 10; //!< Max length of header in RPC req/response
 const size_t MAX_FILE_NAME_LENGTH = 4 << 10;

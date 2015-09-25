@@ -65,13 +65,13 @@ KFS::KfsClient *gKfsClient;
 
 //subrata start
 
-long stripeSize = 32u <<  20; //we will keep it same as chunksize in Kfstypes.h
+long stripeSize = 64u <<  20; //we will keep it same as chunksize in Kfstypes.h
 //long stripeSize = 16u <<  20;
 //int numBytes = 2048;
 //int numBytes = 64 << 20;
 //lets try 8+3
-long numBytes = 8 * stripeSize; //will create one stripe  384 = 64 x 6  (each chunk is 64 MB)
-//long numBytes = 6 * stripeSize; //will create one stripe  384 = 64 x 6  (each chunk is 64 MB)
+//long numBytes = 8 * stripeSize; //will create one stripe  384 = 64 x 6  (each chunk is 64 MB)
+long numBytes = 6 * stripeSize; //will create one stripe  384 = 64 x 6  (each chunk is 64 MB)
 //int numBytes = 768 << 20;  //will create 2 stripes for the whole file
 
 void printLocationOfTheChunksForAFile(string& fileName, long readStartPos, long numBytes)

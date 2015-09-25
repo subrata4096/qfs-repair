@@ -8755,7 +8755,7 @@ int LayoutManager::PopulateDistributedRepairOperationTable_For_8_3(chunkId_t chu
  
 #if 0
 //subrata distribution code for 10+4
-int LayoutManager::PopulateDistributedRepairOperationTable_For_12_4(chunkId_t chunkId, std::list<chunkId_t>& listOfRelatedChunkIds, std::map<std::string, std::map<int,PartialDecodingInfo> >& operationMapForChunkServers, std::map<int, ChunkServerPtr>& eightRemainingSourceServeres, ChunkServerPtr destinationServer)
+int LayoutManager::PopulateDistributedRepairOperationTable_For_10_4(chunkId_t chunkId, std::list<chunkId_t>& listOfRelatedChunkIds, std::map<std::string, std::map<int,PartialDecodingInfo> >& operationMapForChunkServers, std::map<int, ChunkServerPtr>& eightRemainingSourceServeres, ChunkServerPtr destinationServer)
 {
  std::map<int,PartialDecodingInfo> opMap2, opMap4, opMap6, opMapDst; //operation maps for source server index 2,4,6 and Dst
 
@@ -9644,10 +9644,10 @@ ChunkServerPtr LayoutManager::CoordinateTheReplicationProcess(CSMap::Entry& c, c
 //subrata: specific repair plans for different coding parameters
 //plan creation start
      //for 6+3 RS code (original) 
-//     PopulateDistributedRepairOperationTable(theMissing_chunkId, listOfRelatedChunkIds, operationMapForChunkServers, eightRemainingSourceServeres, selectedDstChunkPtr);
+     PopulateDistributedRepairOperationTable(theMissing_chunkId, listOfRelatedChunkIds, operationMapForChunkServers, eightRemainingSourceServeres, selectedDstChunkPtr);
      
      //for 8+3 RS code (original) 
-     PopulateDistributedRepairOperationTable_For_8_3(theMissing_chunkId, listOfRelatedChunkIds, operationMapForChunkServers, eightRemainingSourceServeres, selectedDstChunkPtr);
+     //PopulateDistributedRepairOperationTable_For_8_3(theMissing_chunkId, listOfRelatedChunkIds, operationMapForChunkServers, eightRemainingSourceServeres, selectedDstChunkPtr);
      
      //for 12+4 RS code (original) 
 //     PopulateDistributedRepairOperationTable_For_12_4(theMissing_chunkId, listOfRelatedChunkIds, operationMapForChunkServers, eightRemainingSourceServeres, selectedDstChunkPtr);
