@@ -118,8 +118,8 @@ void createAndWriteFile(string& fname, int& fd)
     //Please refer to line 308 of src/cc/libclient/KfsClient.h
     //if ((fd = gKfsClient->Create(tempFilename.c_str(),1,false,6,3,64<<10,2)) < 0) {
     //lets try 8+3
-    if ((fd = gKfsClient->Create(fname.c_str(),1,false,8,3,stripeSize,3)) < 0) {  //subrata: KFS_STRIPED_FILE_TYPE_RS_JERASURE = 3 // force use of Jerasure library
-    //if ((fd = gKfsClient->Create(fname.c_str(),1,false,6,3,stripeSize,3)) < 0) {  //subrata: KFS_STRIPED_FILE_TYPE_RS_JERASURE = 3 // force use of Jerasure library
+    //if ((fd = gKfsClient->Create(fname.c_str(),1,false,8,3,stripeSize,3)) < 0) {  //subrata: KFS_STRIPED_FILE_TYPE_RS_JERASURE = 3 // force use of Jerasure library
+    if ((fd = gKfsClient->Create(fname.c_str(),1,false,6,3,stripeSize,3)) < 0) {  //subrata: KFS_STRIPED_FILE_TYPE_RS_JERASURE = 3 // force use of Jerasure library
         cout << "Create failed: " << KFS::ErrorCodeToStr(fd) << endl;
         exit(-1);
     }
