@@ -9456,8 +9456,20 @@ ChunkServerPtr LayoutManager::CoordinateTheReplicationProcess(CSMap::Entry& c, c
       selectedDstChunkPtr = this->GetDestinationServerForRepair(existingHosts);
 
       std::map<std::string, std::map<int,PartialDecodingInfo> > operationMapForChunkServers;
-      PopulateDistributedRepairOperationTable(theMissing_chunkId, listOfRelatedChunkIds, operationMapForChunkServers, eightRemainingSourceServeres, selectedDstChunkPtr);
+     
+//subrata: specific repair plans for different coding parameters
+//plan creation start
+     //for 6+3 RS code (original) 
+//     PopulateDistributedRepairOperationTable(theMissing_chunkId, listOfRelatedChunkIds, operationMapForChunkServers, eightRemainingSourceServeres, selectedDstChunkPtr);
+     
+     //for 8+3 RS code (original) 
+     PopulateDistributedRepairOperationTable_For_8_3(theMissing_chunkId, listOfRelatedChunkIds, operationMapForChunkServers, eightRemainingSourceServeres, selectedDstChunkPtr);
+     
+     //for 12+4 RS code (original) 
+//     PopulateDistributedRepairOperationTable_For_12_4(theMissing_chunkId, listOfRelatedChunkIds, operationMapForChunkServers, eightRemainingSourceServeres, selectedDstChunkPtr);
       
+//plan creating end
+
       std::map<int,int> decodingCoefficient;
       this->GetPartialDecodingInformation(stripe_identifier, fa->numStripes, fa->numRecoveryStripes, theRS_chunk_index_missing, decodingCoefficient);
 
