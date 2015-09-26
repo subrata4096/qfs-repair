@@ -9011,17 +9011,17 @@ std::map<ChunkServerPtr, bool> selectedSources;
                         key6= cacheServerStart->first;
                         alreadyAssignedCount++;
                      }
-                     else if(key6.empty())
+                     else if(key8.empty())
                      {
                         key8= cacheServerStart->first;
                         alreadyAssignedCount++;
                      }
-                     else if(key6.empty())
+                     else if(key10.empty())
                      {
                         key10= cacheServerStart->first;
                         alreadyAssignedCount++;
                      }
-                     else if(key6.empty())
+                     else if(key12.empty())
                      {
                         key12= cacheServerStart->first;
                         alreadyAssignedCount++;
