@@ -2749,6 +2749,7 @@ int ChunkServer::getRepairChoiceWeight(bool hasCache)
 }
 bool SortFunction(const ChunkServerPtr server1, const ChunkServerPtr server2, const std::map<std::string, bool>& serversWithHotCache)
 {
+   //KFS_LOG_STREAM_ERROR << "subrata: server weights: cacheMap size = " << serversWithHotCache.size() << KFS_LOG_EOM;
    bool server1_has_cache = false;
    bool server2_has_cache = false;
    if(serversWithHotCache.find(server1->GetHostPortStr()) != serversWithHotCache.end())
@@ -2764,7 +2765,8 @@ bool SortFunction(const ChunkServerPtr server1, const ChunkServerPtr server2, co
    int weight1 = server1->getRepairChoiceWeight(server1_has_cache);
    int weight2 = server2->getRepairChoiceWeight(server2_has_cache);
 
-   return weight1 < weight2;
+   //KFS_LOG_STREAM_ERROR << "subrata: server weights " << server1->GetHostPortStr() << "wt = " << weight1 << "   " << server2->GetHostPortStr() << "wt = " << weight2 << KFS_LOG_EOM;
+   return weight1 > weight2; //higher weight comes first
 
 }
 //subrata end

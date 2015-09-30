@@ -572,6 +572,7 @@ def setup_config_files(config, authFlag):
                 print >> chunkFile, 'chunkServer.pidFile = %s/chunkserver.pid' % chunkRunDir
                 print >> chunkFile, 'chunkServer.clientThreadCount = 0'
                 #print >> chunkFile, 'chunkServer.doNotUseLRUCacheFlag = 1'   #subrata : this is to control whether in memory cache will be used or not
+                print >> chunkFile, 'chunkServer.chunkLRUCacheEntryLimit = 2'
                 if authFlag:
                     print >> chunkFile, 'chunkserver.meta.auth.X509.X509PemFile = %s/chunk%d.crt' % (certsDir, chunkClientPort)
                     print >> chunkFile, 'chunkserver.meta.auth.X509.PKeyPemFile = %s/chunk%d.key' % (certsDir, chunkClientPort)

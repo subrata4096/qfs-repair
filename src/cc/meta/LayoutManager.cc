@@ -8499,6 +8499,7 @@ void LayoutManager::SelectSetOfSourceServers(std::list<chunkId_t>& listOfRelated
   for(; vecStart != vecEnd ; vecStart++)
   {
             ChunkServerPtr servrPtr = *vecStart;
+            //KFS_LOG_STREAM_ERROR << "subrata : printing after sorting " << servrPtr->GetHostPortStr() << KFS_LOG_EOM;
             std::map<std::string, bool> :: iterator cacheServerPos = haveCache.find(servrPtr->GetHostPortStr());
             if(cacheServerPos != haveCache.end())
             {               
@@ -9697,16 +9698,16 @@ ChunkServerPtr LayoutManager::CoordinateTheReplicationProcess(CSMap::Entry& c, c
 //subrata: specific repair plans for different coding parameters
 //plan creation start
      //for 6+3 RS code (original) 
-//     PopulateDistributedRepairOperationTable(theMissing_chunkId, listOfRelatedChunkIds, operationMapForChunkServers, eightRemainingSourceServeres, selectedDstChunkPtr);
+     PopulateDistributedRepairOperationTable(theMissing_chunkId, listOfRelatedChunkIds, operationMapForChunkServers, eightRemainingSourceServeres, selectedDstChunkPtr);
      
      //for 8+3 RS code (original) 
      //PopulateDistributedRepairOperationTable_For_8_3(theMissing_chunkId, listOfRelatedChunkIds, operationMapForChunkServers, eightRemainingSourceServeres, selectedDstChunkPtr);
      
      //for 10+4 RS code (original) 
-     PopulateDistributedRepairOperationTable_For_10_4(theMissing_chunkId, listOfRelatedChunkIds, operationMapForChunkServers, eightRemainingSourceServeres, selectedDstChunkPtr);
+     //PopulateDistributedRepairOperationTable_For_10_4(theMissing_chunkId, listOfRelatedChunkIds, operationMapForChunkServers, eightRemainingSourceServeres, selectedDstChunkPtr);
 
      //for 12+4 RS code (original) 
-     PopulateDistributedRepairOperationTable_For_12_4(theMissing_chunkId, listOfRelatedChunkIds, operationMapForChunkServers, eightRemainingSourceServeres, selectedDstChunkPtr);
+     //PopulateDistributedRepairOperationTable_For_12_4(theMissing_chunkId, listOfRelatedChunkIds, operationMapForChunkServers, eightRemainingSourceServeres, selectedDstChunkPtr);
       
 //plan creating end
 
