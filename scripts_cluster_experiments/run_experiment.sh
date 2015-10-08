@@ -1,6 +1,40 @@
 #!/bin/bash
 
 
+chunkservers=$(cat "/home/ubuntu/chunk_server_list.txt")
+
+function runMetaServer {
+
+ssh ubuntu@$metaServerIp '/home/ubuntu/kill_meta_server.sh'
+
+metaReleaseDir="$qfsdir/$buildDir/debug/"
+
+metaPath="$qfsdir/examples/sampleservers/sample_setup.py"
+
+metaUninstallScript="$metaPath -r $metaReleaseDir -c /home/ubuntu/sample_setup.cfg -a uninstall"
+#$qfsdir/examples/sampleservers/sample_setup.py -r $metaReleaseDir -c /home/ubuntu/sample_setup.cfg -a uninstall
+echo "Uninstall script: $metaUninstallScript" 
+ssh ubuntu@$metaServerIp $metaUninstallScript
+
+sleep 1
+
+
+#echo "***   Netstat BEFORE metaserver launch  **** "
+#echo "-------------------------------------------- "
+#netstat
+
+metaInstallScript="$metaPath -r $metaReleaseDir -c /home/ubuntu/sample_setup.cfg -a install"
+#$qfsdir/examples/sampleservers/sample_setup.py -r $metaReleaseDir -c /home/ubuntu/sample_setup.cfg -a install
+
+echo "Install script: $metaInstallScript" 
+ssh ubuntu@$metaServerIp $metaInstallScript
+
+#echo "***   Netstat AFTER metaserver launch  **** "
+#echo "-------------------------------------------- "
+#netstat
+
+}
+
 function doKill {
             chunkserverIP=$1
             #echo $chunkKillScriptName
@@ -88,7 +122,8 @@ if [ ! -z "$5" -a "$5" != " " ]; then
 fi
 
 #metaServerIp=$3
-metaServerIp="192.168.0.235"
+#metaServerIp="192.168.0.235"
+metaServerIp="192.168.1.145"
 #if [ "$metaServerIp" == ""]
 #then
 #     metaServerIp="192.168.0.235"
@@ -144,12 +179,17 @@ qfsdir="/home/ubuntu/codes/"$qfscodedirname
 #$metaRunScriptName
 
 #Cirrus5chunkservers="192.168.1.225 192.168.1.226 192.168.1.227 192.168.1.228 192.168.1.229 192.168.1.230 192.168.1.231 192.168.1.233 192.168.1.235 192.168.1.236"
-chunkservers="192.168.0.246 192.168.0.250 192.168.0.251 192.168.0.252 192.168.0.253 192.168.0.254 192.168.0.26 192.168.0.27 192.168.0.28 192.168.0.29 192.168.0.3 192.168.0.30 192.168.0.31 192.168.0.32 192.168.0.33"
+#chunkservers="192.168.0.246 192.168.0.250 192.168.0.251 192.168.0.252 192.168.0.253 192.168.0.254 192.168.0.26 192.168.0.27 192.168.0.28 192.168.0.29 192.168.0.3 192.168.0.30 192.168.0.31 192.168.0.32 192.168.0.33"
+#chunkservers="192.168.1.138 192.168.1.139 192.168.1.14 192.168.1.153 192.168.1.141 192.168.1.142 192.168.1.143 192.168.1.144 192.168.1.147 192.168.1.149 192.168.1.15 192.168.1.150"
+#chunkservers="192.168.1.138 192.168.1.139 192.168.1.14 192.168.1.153 192.168.1.141 192.168.1.142 192.168.1.143 192.168.1.144 192.168.1.147 192.168.1.149"  #10 servers for 6+3
+#chunkservers="192.168.1.138 192.168.1.139 192.168.1.14 192.168.1.153 192.168.1.141 192.168.1.142 192.168.1.143 192.168.1.144 192.168.1.147 192.168.1.149 192.168.1.15 192.168.1.150 192.168.1.56 192.168.1.155"  #14 servers for 12+1 decoding
+
 
 #listOfFilesToCopy="ChunkServer.prp MetaServer.prp sample_setup.cfg kill_chunk_server_repair.sh kill_chunk_server.sh kill_meta_server.sh launch_chunk_server_repair.sh launch_chunk_server.sh launch_meta_server.sh run_experiment.sh"
 listOfFilesToCopy="ChunkServer.prp"
 
-qfsClientIp=192.168.0.34
+#qfsClientIp=192.168.0.34
+qfsClientIp=192.168.1.155
  
 #for s in $chunkservers
 #do
@@ -161,6 +201,9 @@ qfsClientIp=192.168.0.34
 #        done
 #done
 
+doRestart $qfsClientIp
+doRestart $metaServerIp
+
 for s in $chunkservers
 do
 	echo "Rebooting ..  $s"
@@ -170,32 +213,18 @@ do
 done
 sleep 50
 
-./kill_meta_server.sh
-
-metaReleaseDir="$qfsdir/$buildDir/debug/"
-
-$qfsdir/examples/sampleservers/sample_setup.py -r $metaReleaseDir -c /home/ubuntu/sample_setup.cfg -a uninstall
-
-sleep 1
-
-
-#echo "***   Netstat BEFORE metaserver launch  **** "
-#echo "-------------------------------------------- "
-#netstat
-
-$qfsdir/examples/sampleservers/sample_setup.py -r $metaReleaseDir -c /home/ubuntu/sample_setup.cfg -a install
-
-
-#echo "***   Netstat AFTER metaserver launch  **** "
-#echo "-------------------------------------------- "
-#netstat
+runMetaServer
 
 sleep 10
 
 
-chunkservers="192.168.0.246 192.168.0.250 192.168.0.251 192.168.0.252 192.168.0.253 192.168.0.254 192.168.0.26 192.168.0.27 192.168.0.28 192.168.0.29 192.168.0.3 192.168.0.30 192.168.0.31 192.168.0.32 192.168.0.33"
+#chunkservers="192.168.0.246 192.168.0.250 192.168.0.251 192.168.0.252 192.168.0.253 192.168.0.254 192.168.0.26 192.168.0.27 192.168.0.28 192.168.0.29 192.168.0.3 192.168.0.30 192.168.0.31 192.168.0.32 192.168.0.33"
 #chunkservers="192.168.0.246 192.168.0.250 192.168.0.251 192.168.0.252 192.168.0.253 192.168.0.254 192.168.0.27 192.168.0.28 192.168.0.29 192.168.0.3 192.168.0.30 192.168.0.31 192.168.0.32 192.168.0.33"
 #chunkservers="192.168.0.246 192.168.0.250 192.168.0.251 192.168.0.252 192.168.0.253 192.168.0.254 192.168.0.26 192.168.0.27 192.168.0.28 192.168.0.29"
+#chunkservers="192.168.1.138 192.168.1.139 192.168.1.14 192.168.1.153 192.168.1.141 192.168.1.142 192.168.1.143 192.168.1.144 192.168.1.147 192.168.1.149 192.168.1.15 192.168.1.150"
+#chunkservers="192.168.1.138 192.168.1.139 192.168.1.14 192.168.1.153 192.168.1.141 192.168.1.142 192.168.1.143 192.168.1.144 192.168.1.147 192.168.1.149"
+#chunkservers="192.168.1.138 192.168.1.139 192.168.1.14 192.168.1.153 192.168.1.141 192.168.1.142 192.168.1.143 192.168.1.144 192.168.1.147 192.168.1.149 192.168.1.15 192.168.1.150 192.168.1.52 192.168.1.56"  #14 servers for 12+1 decoding
+#chunkservers="192.168.1.138 192.168.1.139 192.168.1.14 192.168.1.153 192.168.1.141 192.168.1.142 192.168.1.143 192.168.1.144 192.168.1.147 192.168.1.149 192.168.1.15 192.168.1.150 192.168.1.56 192.168.1.155"  #14 servers for 12+1 decoding
 
 
 for f in $chunkservers
@@ -213,6 +242,14 @@ echo "Client run command : $qfsclientBinaryPath"
 #ssh ubuntu@$qfsClientIp 'bash -s' < $qfsclientBinaryPath
 ssh ubuntu@$qfsClientIp "$qfsclientBinaryPath"
 
+for s in $chunkservers
+do
+    echo "File in chunk server: $s"
+    ssh ubuntu@$s "ls qfsbase/chunkdir11/7.*"
+done
+
+echo -n "Enter when yhou are ready: "
+read takeuserEnter
 
 echo "Giving time populate the cache information from chunkserver to metaserver"
 if [ "$mode" == "orig" ]
@@ -265,8 +302,14 @@ sleep $sleepTime
 
 if [ -z "$targetDirForExp" ]; then
         echo "We have not provided copying log information. So Nothing to do further...exiting..."
+        echo -n "End ? Presss Enter when yhou are ready: "
+        read takeuserEnter
         exit 
 fi
+
+sleepTime=3100
+echo "Large scale experiments sleeping again for : $sleepTime sec"
+sleep $sleepTime
 
 mkdir -p $targetDirForExp
 

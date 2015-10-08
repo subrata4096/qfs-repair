@@ -14,3 +14,4 @@ chunkServer.clientThreadCount = 0
 chunkServer.clientSM.enforceMaxWait = 0
 chunkServer.remoteSync.responseTimeoutSec = 3600
 chunkServer.chunkLRUCacheEntryLimit = 1
+chunkServer.doNotUseLRUCacheFlag = 1

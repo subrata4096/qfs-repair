@@ -6,8 +6,15 @@ chunkSizeList="64MB 32MB 16MB 8MB"
 numExpId="1 2 3"
 #numExpId="1"
 #failureCount="1 2 4 8 10 12"
-failureCount="1 2 4 8 16 32 64"
+#failureCount="1 2 4 8 10 12"
 #failureCount="1"
+
+declare -A fileCount
+declare -A ChunkFailCount
+
+fileCount=( ["6_3"]="1700" ["12_4"]="1000")
+ChunkFailCount=( ["6_3"]="120" ["12_4"]="120")
+
 
 codingList="6_3 12_4"
 
@@ -27,9 +34,11 @@ do
   do
     for chunkSize in $chunkSizeList
       do
-       for fCount in $failureCount
-       do
-         numFilesToWrite=$((fCount + 2))
+       #for fCount in $failureCount
+       #do
+         #numFilesToWrite=$((fCount + 2))
+         numFilesToWrite=${fileCount[$code]}
+	 fCount=${ChunkFailCount[$code]}
       
          for mode in $modeList
          do
@@ -46,9 +55,9 @@ do
              
 	         theCommand="/home/ubuntu/run_experiment.sh $mode $numFilesToWrite $fCount $buildDir $targetLogDir"
                  echo $theCommand
-                 #$theCommand
+                 $theCommand
          done     
-       done
+       #done
     done
   done
 done
