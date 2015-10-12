@@ -332,12 +332,12 @@ metaServerRename3="$targetDirForExp/MetaServer.log.3"
 metaServerRename4="$targetDirForExp/MetaServer.log.4"
 metaServerRenameAll="$targetDirForExp/"
 
-scp ubuntu@metaServerIp $metaServerOrigName $metaServerRename
-scp ubuntu@metaServerIp $metaServerOrigName1 $metaServerRename1
-scp ubuntu@metaServerIp $metaServerOrigName2 $metaServerRename2
-scp ubuntu@metaServerIp $metaServerOrigName3 $metaServerRename3
-scp ubuntu@metaServerIp $metaServerOrigName4 $metaServerRename4
-scp ubuntu@metaServerIp $metaServerOrigNameAll $metaServerRenameAll
+scp ubuntu@metaServerIp:$metaServerOrigName $metaServerRename
+scp ubuntu@metaServerIp:$metaServerOrigName1 $metaServerRename1
+scp ubuntu@metaServerIp:$metaServerOrigName2 $metaServerRename2
+scp ubuntu@metaServerIp:$metaServerOrigName3 $metaServerRename3
+scp ubuntu@metaServerIp:$metaServerOrigName4 $metaServerRename4
+scp ubuntu@metaServerIp:$metaServerOrigNameAll $metaServerRenameAll
 #mv $metaServerOrigName $metaServerRename
 #mv $metaServerOrigName1 $metaServerRename1
 #mv $metaServerOrigName2 $metaServerRename2
