@@ -72,7 +72,7 @@ long stripeSize = 64u <<  20; //we will keep it same as chunksize in Kfstypes.h
 //lets try 8+3
 //long numBytes = 8 * stripeSize; //will create one stripe  384 = 64 x 6  (each chunk is 64 MB)
 //long numBytes = 12 * stripeSize; //will create one stripe  384 = 64 x 6  (each chunk is 64 MB)
-long numBytes = 6 * stripeSize; //will create one stripe  384 = 64 x 6  (each chunk is 64 MB)
+long numBytes = 12 * stripeSize; //will create one stripe  384 = 64 x 6  (each chunk is 64 MB)
 //int numBytes = 768 << 20;  //will create 2 stripes for the whole file
 
 void printLocationOfTheChunksForAFile(string& fileName, long readStartPos, long numBytes)
@@ -121,7 +121,7 @@ void createAndWriteFile(string& fname, int& fd)
     //lets try 8+3
     //if ((fd = gKfsClient->Create(fname.c_str(),1,false,8,3,stripeSize,3)) < 0) {  //subrata: KFS_STRIPED_FILE_TYPE_RS_JERASURE = 3 // force use of Jerasure library
     //if ((fd = gKfsClient->Create(fname.c_str(),1,false,12,1,stripeSize,3)) < 0) {  //subrata: KFS_STRIPED_FILE_TYPE_RS_JERASURE = 3 // force use of Jerasure library
-    if ((fd = gKfsClient->Create(fname.c_str(),1,false,6,3,stripeSize,3)) < 0) {  //subrata: KFS_STRIPED_FILE_TYPE_RS_JERASURE = 3 // force use of Jerasure library
+    if ((fd = gKfsClient->Create(fname.c_str(),1,false,12,4,stripeSize,3)) < 0) {  //subrata: KFS_STRIPED_FILE_TYPE_RS_JERASURE = 3 // force use of Jerasure library
         cout << "Create failed: " << KFS::ErrorCodeToStr(fd) << endl;
         exit(-1);
     }
@@ -188,7 +188,7 @@ void degraded_readFile(string& fname , int fd, int readPos, int readLength)
 
    printLocationOfTheChunksForAFile(fname, readPos, readLength);
    
-  getchar();
+  //getchar();
 
     char *copyBuf = new char[readLength];
 
@@ -337,7 +337,7 @@ main(int argc, char **argv)
     }
 
     cout << numFiles << " Written and Read back." << "  Now waiting. Do the experiment.." << endl;
-    getchar();
+    //getchar();
     //getchar();
 
     /*

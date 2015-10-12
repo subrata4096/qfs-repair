@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-chunkSizeList="64MB 32MB 16MB 8MB"
+chunkSizeList="64MB 32MB 16MB"
 #chunkSizeList="8MB"
 numExpId="1 2 3"
 #numExpId="1"

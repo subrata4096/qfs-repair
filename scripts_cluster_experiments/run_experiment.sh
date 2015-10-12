@@ -131,6 +131,10 @@ metaServerIp="192.168.1.145"
 
 echo "Metaserver IP to be used for client is : $metaServerIp " 
 
+declare -A waitTimeVsFaults
+
+waitTimeVsFaults=( ["1"]="60" ["2"]="60" ["4"]="120" ["8"]="300" ["16"]="600" ["32"]="700" ["64"]="1000" ["128"]="2200" ["256"]="3600" )
+
 qfscodedirname=""
 qfsclientBinaryPath="/home/ubuntu/codes/"
 if [ "$mode" == "orig" ]
@@ -211,11 +215,11 @@ do
         doKill $s
         doRestart $s
 done
-sleep 50
+sleep 120
 
 runMetaServer
 
-sleep 10
+sleep 50
 
 
 #chunkservers="192.168.0.246 192.168.0.250 192.168.0.251 192.168.0.252 192.168.0.253 192.168.0.254 192.168.0.26 192.168.0.27 192.168.0.28 192.168.0.29 192.168.0.3 192.168.0.30 192.168.0.31 192.168.0.32 192.168.0.33"
@@ -234,7 +238,7 @@ do
         doSetup $f
 done
 
-sleep 50
+sleep 120
 
 echo "Metaserver IP to be used for client is : $metaServerIp " 
 echo "Client run command : $qfsclientBinaryPath"
@@ -245,19 +249,19 @@ ssh ubuntu@$qfsClientIp "$qfsclientBinaryPath"
 for s in $chunkservers
 do
     echo "File in chunk server: $s"
-    ssh ubuntu@$s "ls qfsbase/chunkdir11/7.*"
+    ssh ubuntu@$s "ls qfsbase/chunkdir11/*.*"
 done
 
-echo -n "Enter when yhou are ready: "
-read takeuserEnter
+#echo -n "Enter when yhou are ready: "
+#read takeuserEnter
 
 echo "Giving time populate the cache information from chunkserver to metaserver"
 if [ "$mode" == "orig" ]
 then 
-	sleep 5
+	sleep 10
 elif [ "$mode" == "repair" ]
 then
-	sleep 40
+	sleep 100
 fi
 
 
@@ -294,7 +298,8 @@ ssh ubuntu@$toKillChunkServer 'bash -s' < $chunkKillScriptName
 
 #/home/ubuntu/takePeriodicNetStat.sh  &  # take periodic snapshot of netstat
 
-sleepTime=50
+#sleepTime=240
+sleepTime=${waitTimeVsFaults[$numChunksToLose]}
 echo "Give time to repair: $sleepTime sec"
 sleep $sleepTime
 
@@ -302,34 +307,43 @@ sleep $sleepTime
 
 if [ -z "$targetDirForExp" ]; then
         echo "We have not provided copying log information. So Nothing to do further...exiting..."
-        echo -n "End ? Presss Enter when yhou are ready: "
-        read takeuserEnter
         exit 
 fi
 
-sleepTime=3100
-echo "Large scale experiments sleeping again for : $sleepTime sec"
-sleep $sleepTime
-
 mkdir -p $targetDirForExp
 
-for f in $chunkservers
-do
-        echo "Copying chunkserver logs $f to $targetDirForExp"
-        doMoveChunkServerLogs $f $targetDirForExp
-done
+#for f in $chunkservers
+#do
+#        echo "Copying chunkserver logs $f to $targetDirForExp"
+#        doMoveChunkServerLogs $f $targetDirForExp
+#done
 
 metaServerOrigName="/home/ubuntu/qfsbase/meta/MetaServer.log"
 metaServerOrigName1="/home/ubuntu/qfsbase/meta/MetaServer.log.1"
 metaServerOrigName2="/home/ubuntu/qfsbase/meta/MetaServer.log.2"
+metaServerOrigName3="/home/ubuntu/qfsbase/meta/MetaServer.log.3"
+metaServerOrigName4="/home/ubuntu/qfsbase/meta/MetaServer.log.4"
+metaServerOrigNameAll="/home/ubuntu/qfsbase/meta/MetaServer.*"
 
 metaServerRename="$targetDirForExp/MetaServer.log"
 metaServerRename1="$targetDirForExp/MetaServer.log.1"
 metaServerRename2="$targetDirForExp/MetaServer.log.2"
+metaServerRename3="$targetDirForExp/MetaServer.log.3"
+metaServerRename4="$targetDirForExp/MetaServer.log.4"
+metaServerRenameAll="$targetDirForExp/"
 
-mv $metaServerOrigName $metaServerRename
-mv $metaServerOrigName1 $metaServerRename1
-mv $metaServerOrigName2 $metaServerRename2
+scp ubuntu@metaServerIp $metaServerOrigName $metaServerRename
+scp ubuntu@metaServerIp $metaServerOrigName1 $metaServerRename1
+scp ubuntu@metaServerIp $metaServerOrigName2 $metaServerRename2
+scp ubuntu@metaServerIp $metaServerOrigName3 $metaServerRename3
+scp ubuntu@metaServerIp $metaServerOrigName4 $metaServerRename4
+scp ubuntu@metaServerIp $metaServerOrigNameAll $metaServerRenameAll
+#mv $metaServerOrigName $metaServerRename
+#mv $metaServerOrigName1 $metaServerRename1
+#mv $metaServerOrigName2 $metaServerRename2
+#mv $metaServerOrigName3 $metaServerRename3
+#mv $metaServerOrigName4 $metaServerRename4
+#mv $metaServerOrigNameAll $metaServerRenameAll
 
 
 

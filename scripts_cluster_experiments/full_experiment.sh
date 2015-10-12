@@ -25,9 +25,9 @@ experimentLogBaseDir="/home/ubuntu/experimentLogBaseDir"
 
 #metaServerIP="135.197.240.179"
 
-for code in $codingList
+for e in $numExpId
 do
-  for e in $numExpId
+  for code in $codingList
   do
     for chunkSize in $chunkSizeList
       do

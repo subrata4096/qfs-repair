@@ -217,7 +217,7 @@ size_t ChunkServer::sChunkDirsCount = 0;
 
 //subrata add
 //weights for calculating a overall server weight for choosing servers during parallel repair
-int ChunkServer::repairLoadWeight_cache = 3;
+int ChunkServer::repairLoadWeight_cache = 2;
 int ChunkServer::repairLoadWeight_numSrc = 2;
 int ChunkServer::repairLoadWeight_numDst = 1;
 //subrata end

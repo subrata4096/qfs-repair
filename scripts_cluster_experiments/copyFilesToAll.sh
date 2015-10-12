@@ -13,14 +13,12 @@ function doSCP {
 chunkservers=$(cat "/home/ubuntu/all_server_list.txt")
 
 #listOfFilesToCopy="ChunkServer.prp MetaServer.prp sample_setup.cfg kill_chunk_server_repair.sh kill_chunk_server.sh kill_meta_server.sh launch_chunk_server_repair.sh launch_chunk_server.sh launch_meta_server.sh run_experiment.sh"
-#listOfFilesToCopy="ChunkServer.prp"
-listOfFilesToCopy="doCompile_orig.sh doCompile.sh"
-
+#listOfFilesToCopy="ChunkServer.prp doCompile.sh"
 #listOfFilesToCopy="full_experiment.sh full_experiment_hdd_crash.sh"
 
 #listOfFilesToCopy="checkDirs.sh ChunkServer.prp copyFilesToAll.sh doCompile_orig.sh doCompile.sh full_experiment.sh getCodeAndCompile.sh grepOnAllChunkServer.sh kill_chunk_server_repair.sh kill_chunk_server.sh kill_meta_server.sh launch_chunk_server_repair.sh launch_chunk_server.sh launch_meta_server.sh MetaServer.prp moveBuildDirectory.sh moveBuild_orig.sh moveBuild.sh run_experiment.sh runTCp.sh sample_setup.cfg"
 
-#listOfFilesToCopy="all_server_list.txt chunk_server_list.txt bandwidth_limiting.sh checkDirs.sh ChunkServer.prp MetaServer.prp copyChunkSizeFiles.sh copyFilesToAll.sh doAllSetUp.sh doCompile_orig.sh doCompile.sh full_experiment.sh getCodeAndCompile.sh grepOnAllChunkServer.sh kill_chunk_server_repair.sh kill_chunk_server.sh kill_meta_server.sh launch_chunk_server_repair.sh launch_chunk_server.sh launch_meta_server.sh moveBuildDirectory.sh moveBuild_orig.sh moveBuild.sh removeFromAll.sh run_experiment.sh runTCp.sh setup_build.sh takePeriodicNetStat.sh"
+listOfFilesToCopy="all_server_list.txt chunk_server_list.txt bandwidth_limiting.sh checkDirs.sh ChunkServer.prp MetaServer.prp copyChunkSizeFiles.sh copyFilesToAll.sh doAllSetUp.sh doCompile_orig.sh doCompile.sh full_experiment.sh getCodeAndCompile.sh grepOnAllChunkServer.sh kill_chunk_server_repair.sh kill_chunk_server.sh kill_meta_server.sh launch_chunk_server_repair.sh launch_chunk_server.sh launch_meta_server.sh moveBuildDirectory.sh moveBuild_orig.sh moveBuild.sh removeFromAll.sh run_experiment.sh runTCp.sh setup_build.sh takePeriodicNetStat.sh"
  
 for s in $chunkservers
 do
