@@ -69,17 +69,21 @@ def handleLinesForOneExp(lineList, dirName, mode):
 
 if __name__ == "__main__" :
 	
-	chunkSizeList = ["32MB", "64MB", "16MB", "8MB"]
-  	failureCount = [1, 2 , 4,  8,  10, 12]
+	#chunkSizeList = ["32MB", "64MB", "16MB", "8MB"]
+	chunkSizeList = ["64MB"]
+  	failureCount = [1, 2 , 4,  8,  16, 32]
         modeList = ["repair", "orig"]
    	
  	#numExpId = ["1", "2", "3", "4", "5"]
- 	numExpId = ["1", "2", "3", "4"]
+ 	#numExpId = ["1", "2", "3", "4"]
+ 	numExpId = ["1"]
+ 	
+        codes = ["12_4_new"]
 
 
-
-	for chunkSize in chunkSizeList:
-		print " - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - "
+        for code in codes:
+	 for chunkSize in chunkSizeList:
+	 	print " - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - "
 		for fCount in failureCount:
                         print " --------------------------------------------"
 			for mode in modeList:
@@ -87,7 +91,7 @@ if __name__ == "__main__" :
                                 avgTimeList = []
    				for eId in numExpId:
 
-					dirName = "/home/ubuntu/experimentLogBaseDir/" + chunkSize + "/failures_" + str(fCount) + "/" + mode + "/exp_" +  eId
+					dirName = "/home/ubuntu/experimentLogBaseDir/" + code + "/" + chunkSize + "/failures_" + str(fCount) + "/" + mode + "/exp_" +  eId
 
                                         outputStrList = grepForTimeString(dirName)
 
