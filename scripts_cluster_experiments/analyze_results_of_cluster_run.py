@@ -91,7 +91,8 @@ if __name__ == "__main__" :
                                 avgTimeList = []
    				for eId in numExpId:
 
-					dirName = "/home/ubuntu/experimentLogBaseDir/" + code + "/" + chunkSize + "/failures_" + str(fCount) + "/" + mode + "/exp_" +  eId
+					#dirName = "/home/ubuntu/experimentLogBaseDir/" + code + "/" + chunkSize + "/failures_" + str(fCount) + "/" + mode + "/exp_" +  eId
+					dirName = "/home/mitra4/experimentLogBaseDir/" + code + "/" + chunkSize + "/failures_" + str(fCount) + "/" + mode + "/exp_" +  eId
 
                                         outputStrList = grepForTimeString(dirName)
 
