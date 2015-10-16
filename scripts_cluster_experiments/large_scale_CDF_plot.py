@@ -24,6 +24,8 @@ with open(origFileName) as f:
     for line in f:
         parts = line.split(",") # split line into parts
         if len(parts) > 1:   # if at least 2 parts/columns
+            if(int(parts[0]) > 200):
+		continue
             repairNum_orig.append(float(parts[0]))   # column 1 is the failure number
             repairTime_orig.append(float(parts[1]))   # column 2 is the rapirtime
 
@@ -31,6 +33,8 @@ with open(smartFileName) as f:
     for line in f:
         parts = line.split(",") # split line into parts
         if len(parts) > 1:   # if at least 2 parts/columns
+            if(int(parts[0]) > 200):
+		continue
             repairNum_smart.append(float(parts[0]))   # column 1 is the failure number
             repairTime_smart.append(float(parts[1]))   # column 2 is the rapirtime
 
@@ -38,21 +42,37 @@ with open(smartFileName) as f:
 print repairNum_orig
 print repairTime_orig
 
+
 colors = ['b', 'c', 'y', 'm', 'r']
 
-org = plt.scatter(repairNum_orig, repairTime_orig, marker='x', color=colors[3], alpha=0.4)
-smrt = plt.scatter(repairNum_smart, repairTime_smart, marker='o', color=colors[0], alpha=0.4)
 
-xlabels = [1,2,4,8,16,32,64,128,256]
+counts1, bin_edges1 = np.histogram(repairTime_orig, bins=10000)
+ssum1 = float(counts1.sum())
+counts1 = counts1/ssum1
 
-repairTime_orig = [float(i) for i in repairTime_orig]
-repairTime_smart = [float(i) for i in repairTime_smart]
+cdf_orig = np.cumsum(counts1)
+plt.plot(bin_edges1[1:], cdf_orig)
 
-minRepairTimeObserved = np.min(repairTime_smart)
-maxRepairTimeObserved = np.max(repairTime_orig)
+counts2, bin_edges2 = np.histogram(repairTime_smart, bins=10000)
+ssum2 = float(counts2.sum())
+counts2 = counts2/ssum2
 
-recalculatedYTicksInMsec = np.linspace(minRepairTimeObserved-1,maxRepairTimeObserved+2,num=10)
-recalculatedYTicksInSec = [int((i+0.5)/1000) for i in recalculatedYTicksInMsec]
+cdf_smrt = np.cumsum(counts2)
+plt.plot(bin_edges2[1:], cdf_smrt)
+
+#org = plt.scatter(repairNum_orig, repairTime_orig, marker='x', color=colors[3], alpha=0.4)
+#smrt = plt.scatter(repairNum_smart, repairTime_smart, marker='o', color=colors[0], alpha=0.4)
+
+#xlabels = [1,2,4,8,16,32,64,128,256]
+
+#repairTime_orig = [float(i) for i in repairTime_orig]
+#repairTime_smart = [float(i) for i in repairTime_smart]
+
+#minRepairTimeObserved = np.min(repairTime_smart)
+#maxRepairTimeObserved = np.max(repairTime_orig)
+
+#recalculatedYTicksInMsec = np.linspace(minRepairTimeObserved-1,maxRepairTimeObserved+2,num=10)
+#recalculatedYTicksInSec = [int((i+0.5)/1000) for i in recalculatedYTicksInMsec]
 #recalculatedYTicksInSec = recalculatedYTicksInMsec/1000
 
 plt.xscale('log',basex=2)
